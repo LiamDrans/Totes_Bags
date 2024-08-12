@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "totes-bags"
+version = "0.1.0"
+description = ""
+authors = ["SimonH <professional.simonhossain@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pylint = "^3.2.6"
+pytest-testdox = "^3.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
