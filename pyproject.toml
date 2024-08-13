@@ -10,8 +10,12 @@ python = "^3.12"
 pylint = "^3.2.6"
 pytest = "^6.2.4"
 pytest-testdox = "^3.1.0"
+bandit = "^1.7.9"
+safety = "^3.2.5"
+
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+

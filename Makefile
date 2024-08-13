@@ -43,3 +43,12 @@ unit-test:
 
 ## Run all checks
 run-checks: unit-test
+
+## Run the security test (bandit + safety)
+safetycheck:
+	$(POETRY) run safety check -r ./pyproject.toml
+
+banditcheck:
+	$(POETRY) run bandit -lll */*.py
+
+security-test: safetycheck banditcheck
