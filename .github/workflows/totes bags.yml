@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - CI/CD Pipeline Infastructure-as-Code - Implement Terraform
   pull_request:
     branches:
       - main
