@@ -18,9 +18,11 @@ def fetch_table(table_name: str, conn: CreateConnection=None) -> Dict:
         dict: table data formatted into a dictionary
     """
     with CreateConnection() as conn:
-        rows = conn.run(f'SELECT * FROM {identifier(table_name)};')
+        rows = conn.run(f'SELECT * FROM {identifier(table_name)} LIMIT 1;')
+        print(rows[0])
 
         if conn.row_count:
+    
             return format_response(
                 conn.columns,
                 rows,
@@ -31,4 +33,4 @@ def fetch_table(table_name: str, conn: CreateConnection=None) -> Dict:
 
 if __name__ == '__main__':
     sales_orders = fetch_table('sales_order')
-    print(json.dumps(sales_orders, indent=2))
+    # print(json.dumps(sales_orders, indent=2))

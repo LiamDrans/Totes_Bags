@@ -5,6 +5,8 @@ from datetime import datetime
 from pytest import mark
 from db.utils.converters import convert_datetime, convert_decimal
 from db.utils.functional import compose
+from db.utils.helpers import format_response
+from .sample_row import test_row, test_columns, resulting_row
 
 @mark.describe('testing data converter functions')
 class TestConverters:
@@ -42,3 +44,33 @@ class TestFunctionals:
             return x*2
         calculation = compose(increment, multiply)
         assert calculation(2) == 5
+
+@mark.describe('testing helper functions')
+class TestHelpers:
+
+    @mark.it('Test format response with decimal and datetime castings')
+    def test_format_response(self):
+        castings = [convert_datetime, convert_decimal]
+        result = format_response(test_columns, test_row, castings, label='test')
+        assert result['test'] == resulting_row
+    
+    @mark.it('Test format response with only decimal casting')
+    def test_format_response_decimal(self):
+        result = format_response(test_columns, test_row, castings=[convert_decimal], label='test')
+        assert result['test'] != resulting_row
+        assert isinstance(result['test'][0]['unit_price'], float)
+        assert isinstance(result['test'][0]['last_updated'], datetime)
+
+    @mark.it('Test format response with only datetime casting')
+    def test_format_response_datetime(self):
+        result = format_response(test_columns, test_row, castings=[convert_datetime], label='test')
+        assert result['test'] != resulting_row
+        assert isinstance(result['test'][0]['unit_price'], Decimal)
+        assert isinstance(result['test'][0]['last_updated'], str)
+
+    @mark.it('Test format response with no casting')
+    def test_format_response_no_castings(self):
+        result = format_response(test_columns, test_row, castings=None, label='test')
+        assert result['test'] != resulting_row
+        assert isinstance(result['test'][0]['unit_price'], Decimal)
+        assert isinstance(result['test'][0]['last_updated'], datetime)
