@@ -27,13 +27,13 @@ jobs:
 #      uses: snok/install-poetry@v1
 
     - name: Install dependencies
-      run: poetry install
+      run: make requirements
 
     - name: Run tests
       run: make unit-test
 
     - name: Run pylint on src
-      run: make run-pylint-src
+      run: make run-pylint
 
 
   deploy:
