@@ -1,0 +1,85 @@
+name: totes bags.yml
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
+
+    - name: Install Poetry
+      run: curl -sSL https://install.python-poetry.org | python3 -
+#      uses: snok/install-poetry@v1
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Run tests
+      run: make unit-test
+
+    - name: Run pylint on src
+      run: make run-pylint-src
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init
+      - name: Terraform plan
+        working-directory: terraform
+        run: terraform plan
+      - name: Terraform apply
+        working-directory: terraform
+        run: terraform apply --auto-approve
+
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Set up Python
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: '3.12'
+#
+#      - uses: aws-actions/configure-aws-credentials@v1
+#        with:
+#          aws-access-key-id: $\{{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: $\{{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: $\{{ secrets.AWS_REGION }}
+#
+#      - name: Deploy to AWS
+#        env:
+#            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#            AWS_REGION: eu-west-2
+#        run: make deploy
+
