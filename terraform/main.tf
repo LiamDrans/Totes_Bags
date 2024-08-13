@@ -15,7 +15,8 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "zameer-simon-cicd-test"
-    key    = "state/"
+    key    = "state"
     region = "eu-west-2"
   }
 }
+

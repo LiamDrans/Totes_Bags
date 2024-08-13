@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#terraform
+*.zip
+**/.terraform*
+terraform/init.sh
+*.tfstate*
+
 # C extensions
 *.so
 
