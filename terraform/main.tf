@@ -10,3 +10,14 @@ terraform {
 provider "aws" {
     region = "eu-west-2"
 }
+
+terraform {
+    backend "s3" {
+        bucket = "terraform-state-file-sidley"
+        key = "terraform.tfstate"
+        region = "eu-west-2"
+        encrypt = true
+        #dynamodb_table = "terraform-state-lock"
+    }
+}
+

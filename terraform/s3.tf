@@ -36,3 +36,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_ingestion_lifecycle" {
     status = "Enabled"
     }
 }
+
+# resource "aws_s3_bucket" "terraform_state_file" {
+#     bucket_prefix = "terraform-state-file-team-sidley"
+# }
+
