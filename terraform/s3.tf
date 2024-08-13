@@ -35,6 +35,15 @@ resource "aws_s3_object" "upload_state" {
   ]
 }
 
+terraform {
+    backend "s3" {
+        bucket = "terraform-state-bucket-for-sidley"
+        key = "terraform.tfstate"
+        region = "eu-west-2"
+        encrypt = true
+    }
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "data_ingestion_lifecycle" {
     bucket = aws_s3_bucket.data_ingestion.id
 

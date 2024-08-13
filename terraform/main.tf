@@ -13,7 +13,7 @@ provider "aws" {
 
 # terraform {
 #     backend "s3" {
-#         bucket = "terraform-state-file-sidley"
+#         bucket = "terraform-state-bucket-for-sidley"
 #         key = "terraform.tfstate"
 #         region = "eu-west-2"
 #         encrypt = true
