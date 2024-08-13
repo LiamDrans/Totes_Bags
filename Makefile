@@ -52,3 +52,6 @@ banditcheck:
 	$(POETRY) run bandit -lll */*.py
 
 security-test: safetycheck banditcheck
+
+check-coverage:
+	$(POETRY) pytest --cov=src test/
