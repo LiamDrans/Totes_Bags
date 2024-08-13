@@ -16,6 +16,25 @@ resource "aws_s3_bucket" "code_bucket" {
     }
 }
 
+resource "aws_s3_bucket" "state_bucket" {
+    bucket = "terraform-state-bucket-for-sidley"
+
+    tags = {
+      Environment = "Production"
+    }
+}
+
+resource "aws_s3_object" "upload_state" {
+  bucket       = "${aws_s3_bucket.state_bucket.id}"
+  acl          = "private"
+  key          = "terraform-backend/terraform.tfstate"
+  source       = "terraform.tfstate"
+  content_type = "application/json"
+  depends_on = [
+    aws_s3_bucket.state_bucket,
+  ]
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "data_ingestion_lifecycle" {
     bucket = aws_s3_bucket.data_ingestion.id
 
@@ -37,9 +56,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_ingestion_lifecycle" {
     }
 }
 
-# resource "aws_s3_bucket" "terraform_state_file" {
-#     bucket_prefix = "terraform-state-file-team-sidley"
-# }
 
 
 resource "aws_s3_bucket_policy" "data_ingestion_policy" {
