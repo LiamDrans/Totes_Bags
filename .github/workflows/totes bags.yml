@@ -29,13 +29,16 @@ jobs:
     - name: Install dependencies
       run: make requirements
 
-    - name: Run security tests
+    - name: Security tests
       run: make security-test 
 
-    - name: Run tests
+    - name: Unit tests
       run: make unit-test
 
-    - name: Run pylint on src
+    - name: Coverage tests
+      run: make check-coverage
+
+    - name: Pylint on src
       run: make run-pylint
 
 
