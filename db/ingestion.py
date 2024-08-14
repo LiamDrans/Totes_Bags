@@ -21,3 +21,5 @@ def lambda_handler(event, context):
         Bucket='TBD',
         Key='latest_db_totes.zip'
     )
+
+    
