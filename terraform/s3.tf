@@ -16,24 +16,24 @@ resource "aws_s3_bucket" "code_bucket" {
     }
 }
 
-resource "aws_s3_bucket" "state_bucket" {
-    bucket = "terraform-state-bucket-for-sidley"
+# resource "aws_s3_bucket" "state_bucket" {
+#     bucket = "terraform-state-bucket-for-sidley"
 
-    tags = {
-      Environment = "Production"
-    }
-}
+#     tags = {
+#       Environment = "Production"
+#     }
+# }
 
-resource "aws_s3_object" "upload_state" {
-  bucket       = "${aws_s3_bucket.state_bucket.id}"
-  acl          = "private"
-  key          = "terraform.tfstate"
-  source       = "terraform.tfstate"
-  content_type = "application/json"
-  depends_on = [
-    aws_s3_bucket.state_bucket,
-  ]
-}
+# resource "aws_s3_object" "upload_state" {
+#   bucket       = "${aws_s3_bucket.state_bucket.id}"
+#   acl          = "private"
+#   key          = "terraform.tfstate"
+#   source       = "terraform.tfstate"
+#   content_type = "application/json"
+#   depends_on = [
+#     aws_s3_bucket.state_bucket,
+#   ]
+# }
 
 terraform {
     backend "s3" {
