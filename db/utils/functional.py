@@ -1,13 +1,11 @@
 ''' functional programming helpers '''
-from typing import Callable, Any
+from typing import Callable
 from functools import reduce
+
+def pipe(*fns) -> Callable:
+    ''' pipe functions '''
+    return lambda x: reduce(lambda f,g: g(f), fns, x)
 
 def compose(*fns) -> Callable:
     ''' compose functions '''
-    return lambda x: reduce(lambda g,f: f(g), reversed(fns), x)
-
-def compose_two(f: Callable, g: Callable) -> Callable:
-    ''' composes two functions '''
-    def map_on(x: Any) -> Any:
-        return f(g(x))
-    return map_on
+    return pipe(*reversed(fns))
