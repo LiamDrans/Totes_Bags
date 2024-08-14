@@ -1,15 +1,15 @@
 """Script for lambda_handler"""
 
-import boto3
 import datetime
-from crud_functions import save_all_tables
+import boto3
+from db.crud_functions import save_all_tables
 from db.utils.get_bucket_names import get_data_bucket_name
 
 def lambda_handler(event, context):
 
     """lambda function to put zip on S3 Bucket"""
 
-
+    save_all_tables()
 
     bucket_name = get_data_bucket_name()
 
