@@ -64,7 +64,7 @@ def save_all_tables() -> List|bool:
 
             with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
                 for name in table_names:
-                    z.write(filename)
+                    z.write(f'./db/json_files/db_totes_{name}.json')
 
         except Error as e:
             print(str(e))
