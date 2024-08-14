@@ -1,6 +1,7 @@
 
 resource "aws_cloudwatch_log_group" "logs" {
   name = "Totes_Bags"
+  retention_in_days = 60
 
   tags = {
     Environment = "production"
@@ -27,6 +28,7 @@ resource "aws_cloudwatch_metric_alarm" "alarm" {
   evaluation_periods  = 1
   metric_name         = "ErrorMetric"
   namespace           = "CustomLambdaMetrics"
+  statistic           = "SampleCount"
   period              = 60
   threshold           = 1
   alarm_actions     = [aws_ses_event_destination.destination.arn]
