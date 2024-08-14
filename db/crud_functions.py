@@ -1,34 +1,73 @@
 ''' initial crud operations for the database '''
-
-import json
-from typing import Dict
+from zipfile import ZipFile, ZIP_DEFLATED
+from typing import Optional, Union, Dict, List
 from connection import CreateConnection
-from pg8000.native import identifier
+from pg8000.native import Connection, identifier, Error
+from utils.json_io import save_json
 from utils.helpers import format_response
-from utils.converters import convert_datetime, convert_decimal
 
-def fetch_table(table_name: str, conn: CreateConnection=None) -> Dict:
-    """ fetches table data and formats it into JSON formattable data
 
+def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
+    """Query the database and return the result as a list, or None if no rows are returned.
+    Arguments:
+        sql (str): query string
+        conn: the database connection
+
+    Returns:
+        List: a list of rows from the database or None if no rows are returned
+    """
+    if not isinstance(conn, Connection):
+        with CreateConnection() as new_conn:
+            return new_conn.run(sql)
+    return conn.run(sql)
+
+
+def fetch_one_table(table_name: str, conn: Optional[Connection] = None) -> Union[Dict, bool]:
+    """ fetches table data and formats it
     Arguments:
         table_name (str): name of the table to query
         conn: the database connection
 
     Returns:
-        dict: table data formatted into a dictionary
+        Dict: table data formatted into a dictionary or False if no data is returned
     """
-    with CreateConnection() as conn:
-        rows = conn.run(f'SELECT * FROM {identifier(table_name)};')
+    if (rows:= query_db(f'SELECT * FROM {identifier(table_name)};', conn)):
+        return format_response(conn.columns, rows, label=table_name)
+    return False
 
-        if conn.row_count:
-            return format_response(
-                conn.columns,
-                rows,
-                label=table_name,
-                castings=[convert_datetime, convert_decimal]
-            )
-        return False
+
+def fetch_table_names(conn: Optional[Connection] = None) -> Union[List, bool]:
+    ''' fetches all public table names from database '''
+    sql = """
+        SELECT
+            table_name
+        FROM
+            information_schema.tables
+        WHERE table_schema='public' AND table_name ~ '^[a-z]'
+    """
+    if (rows:= query_db(sql, conn)):
+        return [row[0] for row in rows]
+    return False
+
+
+def save_all_tables() -> List|bool:
+    ''' fetches data from all the tables '''
+    with CreateConnection() as conn:
+        try:
+            table_names = fetch_table_names(conn)
+
+            for name in table_names:
+                table_data = fetch_one_table(name, conn)
+                filename = f'./db/json_files/db_totes_{name}.json'
+
+                save_json(table_data, filename)
+
+            with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
+                for name in table_names:
+                    z.write(f'./db/json_files/db_totes_{name}.json')
+
+        except Error as e:
+            print(str(e))
 
 if __name__ == '__main__':
-    sales_orders = fetch_table('sales_order')
-    print(json.dumps(sales_orders, indent=2))
+    save_all_tables()

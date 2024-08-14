@@ -21,6 +21,7 @@ class CreateConnection():
             return str(e)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        print('closing connection...')
         if isinstance(self.connection, Connection):
             self.connection.close()
             self.connection = None
