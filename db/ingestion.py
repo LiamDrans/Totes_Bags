@@ -11,6 +11,7 @@ def lambda_handler(event, context):
 
     save_all_tables()
 
+
     bucket_name = get_data_bucket_name()
 
     s3 = boto3.resource('s3')
