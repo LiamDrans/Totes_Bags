@@ -1,10 +1,9 @@
 ''' initial crud operations for the database '''
-import json
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Optional, Union, Dict, List
 from connection import CreateConnection
 from pg8000.native import Connection, identifier, Error
-from utils.converters import CustomJSONEncoder
+from utils.json_io import save_json
 from utils.helpers import format_response
 
 
@@ -33,11 +32,7 @@ def fetch_one_table(table_name: str, conn: Optional[Connection] = None) -> Union
         Dict: table data formatted into a dictionary or False if no data is returned
     """
     if (rows:= query_db(f'SELECT * FROM {identifier(table_name)};', conn)):
-        return format_response(
-            conn.columns,
-            rows,
-            label=table_name
-        )
+        return format_response(conn.columns, rows, label=table_name)
     return False
 
 
@@ -65,12 +60,11 @@ def save_all_tables() -> List|bool:
                 table_data = fetch_one_table(name, conn)
                 filename = f'./db/json_files/db_totes_{name}.json'
 
-                with open(filename, 'w', encoding='utf-8') as f:
-                    json.dump(table_data, f, separators=(',', ':'), cls=CustomJSONEncoder)
+                save_json(table_data, filename)
 
             with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
                 for name in table_names:
-                    z.write(f'./db/json_files/db_totes_{name}.json')
+                    z.write(filename)
 
         except Error as e:
             print(str(e))

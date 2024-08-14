@@ -1,20 +1,8 @@
 ''' Converter functions '''
 import json
-from typing import Any
+from typing import Dict
 from decimal import Decimal
 from datetime import datetime
-
-def convert_decimal(value: Any) -> float|Any:
-    ''' convert Decimals to float '''
-    if isinstance(value, Decimal):
-        return float(value)
-    return value
-
-def convert_datetime(value: Any) -> str|Any:
-    ''' convert datetimes to string '''
-    if isinstance(value, datetime):
-        return value.isoformat()
-    return value
 
 # Custom class extends json.JSONEncoder
 class CustomJSONEncoder(json.JSONEncoder):
@@ -29,3 +17,8 @@ class CustomJSONEncoder(json.JSONEncoder):
 
         # Default behavior for all other types
         return super().default(o)
+
+def save_json(data: Dict, filename: str) -> None:
+    ''' saves json file to destination '''
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, separators=(',', ':'), cls=CustomJSONEncoder)
