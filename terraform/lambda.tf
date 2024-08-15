@@ -1,16 +1,16 @@
-data "archive_file" "extract_lambda" {
+data "archive_file" "extract" {
     type        = "zip"
     output_path = "${path.module}/../packages/extract_sample/function.zip"
     source_file = "${path.module}/../src/extract_sample.py"
 }
 
-data "archive_file" "transform_lambda" {
+data "archive_file" "transform" {
     type        = "zip"
     output_path = "${path.module}/../packages/transform_sample/function.zip"
     source_file = "${path.module}/../src/transform_sample.py"
 }
 
-data "archive_file" "load_lambda" {
+data "archive_file" "load" {
     type        = "zip"
     output_path = "${path.module}/../packages/load_sample/function.zip"
     source_file = "${path.module}/../src/load_sample.py"
@@ -18,7 +18,7 @@ data "archive_file" "load_lambda" {
 
 resource "aws_lambda_function" "task_extract" {
     function_name    = var.extract_lambda
-    source_code_hash = data.archive_file.extract_lambda.output_base64sha256
+    source_code_hash = data.archive_file.extract.output_base64sha256
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.extract_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn

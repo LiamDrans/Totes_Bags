@@ -85,18 +85,6 @@ resource "aws_s3_bucket_policy" "data_ingestion_policy" {
             "aws:SourceIp": "192.168.0.0/16"
         }
     }
-    },
-    {
-        "Sid": "DenyUnencryptedUploads",
-        "Effect": "Deny",
-        "Principal": "*",
-        "Action": "s3:PutObject",
-        "Resource": "arn:aws:s3:::${aws_s3_bucket.data_ingestion.id}/*",
-        "Condition": {
-        "StringNotEquals": {
-            "s3:x-amz-server-side-encryption": "aws:kms"
-        }
-      }
     }
   ]
 }
