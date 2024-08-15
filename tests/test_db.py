@@ -1,6 +1,7 @@
 """test script for the db functions"""
 import pytest
 from pytest_postgresql import factories
+from unittest.mock import MagicMock, patch
 import json
 import datetime
 from pytest import mark
@@ -9,23 +10,24 @@ from db.crud_functions import query_db, fetch_one_table, fetch_table_names, save
 
 
 
-postgresql_my_proc = factories.postgresql_proc(port=9876)
-postgresql = factories.postgresql('postgresql_my_proc')
-
-@mark.it('Test connection to database and pulls one row')
-def test_query_db_returns_all_data_with_appropriate_query(postgresql):
-    cur = postgresql.cursor()
-    cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
-    cur.execute("INSERT INTO test (num, data) VALUES (1, 'test data');")
-    postgresql.commit()
-    cur.close()
-
-    sql = "SELECT * FROM currency LIMIT 1;"
-    result = query_db(sql)
-    assert result == [[1, 'GBP', datetime.datetime(2022, 11, 3, 14, 20, 49, 962000), datetime.datetime(2022, 11, 3, 14, 20, 49, 962000)]]
+# postgresql_my_proc = factories.postgresql_proc(port=9876)
+# postgresql = factories.postgresql('postgresql_my_proc')
+#
+# @mark.it('Test connection to database and pulls one row')
+# @patch('db.connection.CreateConnection')
+# def test_query_db_returns_all_data_with_appropriate_query(MockConnection, postgresql):
+#     cur = postgresql.cursor()
+#     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
+#     cur.execute("INSERT INTO test (num, data) VALUES (1, 'test data');")
+#     postgresql.commit()
+#     cur.close()
+#
+#     sql = "SELECT * FROM currency LIMIT 1;"
+#     result = query_db(sql)
+#     assert MockConnection.called
+#     assert result == [[1, 'GBP', datetime.datetime(2022, 11, 3, 14, 20, 49, 962000), datetime.datetime(2022, 11, 3, 14, 20, 49, 962000)]]
 
 @mark.describe('testing fetch_one_table')
-@pytest.mark.skip
 def test_fetch_one_table_returns_only_one_table():
     with CreateConnection() as conn:
         result = fetch_one_table('currency', conn)

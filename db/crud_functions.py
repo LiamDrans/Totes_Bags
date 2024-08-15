@@ -7,8 +7,7 @@ from pg8000.native import Connection, identifier, Error
 from db.utils.json_io import save_json
 from db.utils.helpers import format_response
 
-
-def query_db(sql: str) -> Union[List, None]:
+def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
     """Query the database and return the result as a list, or None if no rows are returned.
     Arguments:
         sql (str): query string
@@ -17,8 +16,10 @@ def query_db(sql: str) -> Union[List, None]:
     Returns:
         List: a list of rows from the database or None if no rows are returned
     """
-    with CreateConnection() as connection:
-        return connection.run(sql)
+    if not isinstance(conn, Connection):
+        with CreateConnection() as new_conn:
+            return new_conn.run(sql)
+    return conn.run(sql)
 
 
 def fetch_one_table(table_name: str, conn: Optional[Connection] = None) -> Union[Dict, bool]:
@@ -30,7 +31,7 @@ def fetch_one_table(table_name: str, conn: Optional[Connection] = None) -> Union
     Returns:
         Dict: table data formatted into a dictionary or False if no data is returned
     """
-    if (rows:= query_db(f'SELECT * FROM {identifier(table_name)};')):
+    if rows:= query_db(f'SELECT * FROM {identifier(table_name)};', conn):
         return format_response(conn.columns, rows, label=table_name)
     return False
 
