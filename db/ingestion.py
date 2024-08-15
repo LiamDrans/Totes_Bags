@@ -14,7 +14,6 @@ def lambda_handler():
 
     bucket_name = get_data_bucket_name()
 
-    s3 = boto3.resource('s3')
     s3 = boto3.client('s3')
     
     s3.put_object(
@@ -28,3 +27,6 @@ def lambda_handler():
         Bucket=bucket_name,
         Key='latest_db_totes.zip'
     )
+
+if __name__ == '__main__':
+    lambda_handler()

@@ -58,13 +58,13 @@ def save_all_tables() -> List|bool:
 
             for name in table_names:
                 table_data = fetch_one_table(name, conn)
-                filename = f'./json_files/db_totes_{name}.json'
+                filename = f'./db/json_files/db_totes_{name}.json'
 
                 save_json(table_data, filename)
 
-            with ZipFile('./json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
+            with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
                 for name in table_names:
-                    z.write(f'./json_files/db_totes_{name}.json')
+                    z.write(f'./db/json_files/db_totes_{name}.json')
 
         except Error as e:
             print(str(e))
