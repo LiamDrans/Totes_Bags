@@ -1,10 +1,10 @@
 ''' initial crud operations for the database '''
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Optional, Union, Dict, List
-from connection import CreateConnection
+from db.connection import CreateConnection
 from pg8000.native import Connection, identifier, Error
-from utils.json_io import save_json
-from utils.helpers import format_response
+from db.utils.json_io import save_json
+from db.utils.helpers import format_response
 
 
 def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
@@ -58,13 +58,13 @@ def save_all_tables() -> List|bool:
 
             for name in table_names:
                 table_data = fetch_one_table(name, conn)
-                filename = f'./db/json_files/db_totes_{name}.json'
+                filename = f'./json_files/db_totes_{name}.json'
 
                 save_json(table_data, filename)
 
-            with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
+            with ZipFile('./json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
                 for name in table_names:
-                    z.write(f'./db/json_files/db_totes_{name}.json')
+                    z.write(f'./json_files/db_totes_{name}.json')
 
         except Error as e:
             print(str(e))

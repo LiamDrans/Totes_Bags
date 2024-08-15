@@ -2,7 +2,7 @@
 
 from pg8000.native import Connection, Error
 from dotenv import load_dotenv
-from db_credentials import get_db_credentials
+from db.db_credentials import get_db_credentials
 
 load_dotenv()
 
