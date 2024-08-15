@@ -33,8 +33,3 @@ class CreateConnection:
         if isinstance(self.connection, Connection):
             self.connection.close()
             self.connection = None
-
-
-if __name__ == "__main__":
-    with CreateConnection() as conn:
-        print(conn)

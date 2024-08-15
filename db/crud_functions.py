@@ -8,7 +8,7 @@ from db.utils.json_io import save_json
 from db.utils.helpers import format_response
 
 
-def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
+def query_db(sql: str) -> Union[List, None]:
     """Query the database and return the result as a list, or None if no rows are returned.
     Arguments:
         sql (str): query string
@@ -17,10 +17,8 @@ def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
     Returns:
         List: a list of rows from the database or None if no rows are returned
     """
-    if not isinstance(conn, Connection):
-        with CreateConnection() as new_conn:
-            return new_conn.run(sql)
-    return conn.run(sql)
+    with CreateConnection() as connection:
+        return connection.run(sql)
 
 
 def fetch_one_table(table_name: str, conn: Optional[Connection] = None) -> Union[Dict, bool]:
@@ -32,21 +30,17 @@ def fetch_one_table(table_name: str, conn: Optional[Connection] = None) -> Union
     Returns:
         Dict: table data formatted into a dictionary or False if no data is returned
     """
-    if (rows:= query_db(f'SELECT * FROM {identifier(table_name)};', conn)):
+    if (rows:= query_db(f'SELECT * FROM {identifier(table_name)};')):
         return format_response(conn.columns, rows, label=table_name)
     return False
 
 
 def fetch_table_names(conn: Optional[Connection] = None) -> Union[List, bool]:
     ''' fetches all public table names from database '''
-    sql = """
-        SELECT
-            table_name
-        FROM
-            information_schema.tables
-        WHERE table_schema='public' AND table_name ~ '^[a-z]'
+    sql = """SELECT table_name FROM information_schema.tables
+             WHERE table_schema='public' AND table_name ~ '^[a-z]'
     """
-    if (rows:= query_db(sql, conn)):
+    if (rows:= query_db(sql)):
         return [row[0] for row in rows]
     return False
 
@@ -62,8 +56,6 @@ def save_all_tables() -> List|bool:
                 filename = f'./db/json_files/db_totes_{name}.json'
 
                 save_json(table_data, filename)
-            
-            time.sleep(3)
 
             with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
                 for name in table_names:
