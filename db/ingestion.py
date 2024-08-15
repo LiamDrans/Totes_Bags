@@ -16,14 +16,14 @@ def lambda_handler():
 
     s3 = boto3.client('s3')
     
-    s3.put_object(
-        Body='db/json_files/db_totes.zip',
+    s3.upload_file(
+        'db/json_files/db_totes.zip',
         Bucket=bucket_name,
         Key=f'{datetime.datetime.now()}_db_totes.zip'
     )
 
-    s3.put_object(
-        Body='db/json_files/db_totes.zip',
+    s3.upload_file(
+        'db/json_files/db_totes.zip',
         Bucket=bucket_name,
         Key='latest_db_totes.zip'
     )

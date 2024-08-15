@@ -1,4 +1,5 @@
 ''' initial crud operations for the database '''
+import time
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Optional, Union, Dict, List
 from db.connection import CreateConnection
@@ -61,6 +62,8 @@ def save_all_tables() -> List|bool:
                 filename = f'./db/json_files/db_totes_{name}.json'
 
                 save_json(table_data, filename)
+            
+            time.sleep(10)
 
             with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
                 for name in table_names:
