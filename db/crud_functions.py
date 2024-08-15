@@ -1,10 +1,10 @@
 ''' initial crud operations for the database '''
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Optional, Union, Dict, List
-from connection import CreateConnection
+from db.connection import CreateConnection
 from pg8000.native import Connection, identifier, Error
-from utils.json_io import save_json
-from utils.helpers import format_response
+from db.utils.json_io import save_json
+from db.utils.helpers import format_response
 
 
 def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
