@@ -1,18 +1,31 @@
 """test script for the db functions"""
 
+from pytest_postgresql import factories
 import json
 import datetime
 from pytest import mark
 from db.connection import CreateConnection
 from db.crud_functions import query_db, fetch_one_table, fetch_table_names, save_all_tables
 
+postgresql_my_proc = factories.postgresql_proc(
+    port=None, unixsocketdir='/var/run')
+
+
+
 @mark.describe('testing query_db')
 class TestQueryDB:
 
     @mark.it('Test connection to database and pulls one row')
-    def test_query_db(self):
-        sql = "SELECT * from currency LIMIT 1;"
-        result = query_db(sql)
+    def test_query_db(self, postgresql_my_proc):
+
+        cur = postgresql_my_proc.cursor()
+        cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
+        cur.execute("INSERT INTO test (num, data) VALUES (1, 'test data');")
+        postgresql_my_proc.commit()
+        cur.close()
+
+        sql = "SELECT * from test;"
+        result = query_db(sql, cur)
         assert result == [[1, 'GBP', datetime.datetime(2022, 11, 3, 14, 20, 49, 962000), datetime.datetime(2022, 11, 3, 14, 20, 49, 962000)]]
 
 @mark.describe('testing fetch_one_table')

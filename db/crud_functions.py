@@ -63,7 +63,7 @@ def save_all_tables() -> List|bool:
 
                 save_json(table_data, filename)
             
-            time.sleep(10)
+            time.sleep(3)
 
             with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
                 for name in table_names:
