@@ -1,19 +1,19 @@
 data "archive_file" "extract" {
     type        = "zip"
-    output_path = "${path.module}/../packages/extract_sample/function.zip"
-    source_file = "${path.module}/../src/extract_sample.py"
+    output_path = "${path.module}/../packages/extract/function.zip"
+    source_file = "${path.module}/../src/extract.py"
 }
 
 data "archive_file" "transform" {
     type        = "zip"
-    output_path = "${path.module}/../packages/transform_sample/function.zip"
-    source_file = "${path.module}/../src/transform_sample.py"
+    output_path = "${path.module}/../packages/transform/function.zip"
+    source_file = "${path.module}/../src/transform.py"
 }
 
 data "archive_file" "load" {
     type        = "zip"
-    output_path = "${path.module}/../packages/load_sample/function.zip"
-    source_file = "${path.module}/../src/load_sample.py"
+    output_path = "${path.module}/../packages/load/function.zip"
+    source_file = "${path.module}/../src/load.py"
 }
 
 resource "aws_lambda_function" "task_extract" {
@@ -25,10 +25,9 @@ resource "aws_lambda_function" "task_extract" {
     handler          = "${var.extract_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
-    # add layers = ....
+    layers           = [aws_lambda_layer_version.dependencies.arn]
 
-    depends_on = [aws_s3_object.lambda_code]
-    #needs to depend on layer also
+    depends_on = [aws_s3_object.lambda_code, aws_lambda_layer_version.dependencies]
 }
 
 resource "aws_lambda_function" "task_transform" {

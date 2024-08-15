@@ -1,16 +1,16 @@
 variable "extract_lambda" {
     type    = string
-    default = "extract_sample"
+    default = "extract"
 }
 
 variable "transform_lambda" {
     type    = string
-    default = "transform_sample"
+    default = "transform"
 }
 
 variable "load_lambda" {
     type    = string
-    default = "load_sample"
+    default = "load"
 }
 
 variable "default_timeout" {
