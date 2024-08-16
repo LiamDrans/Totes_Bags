@@ -108,6 +108,6 @@ resource "aws_s3_object" "lambda_layer" {
   bucket = aws_s3_bucket.code_bucket.bucket
   key    = "layer/layer.zip"
   source = data.archive_file.layer_code.output_path
-  source_hash =    filemd5("${path.module}/../packages/layer/layer.zip")
+  source_hash = data.archive_file.layer_code.output_base64sha256
   depends_on = [ data.archive_file.layer_code ]
 }

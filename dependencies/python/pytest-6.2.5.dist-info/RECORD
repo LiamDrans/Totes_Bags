@@ -1,5 +1,5 @@
-../../bin/py.test,sha256=swtNzGgHhrKWzqqjSAL9CRXsFIFhES6QOVm74UuqsoU,281
-../../bin/pytest,sha256=swtNzGgHhrKWzqqjSAL9CRXsFIFhES6QOVm74UuqsoU,281
+../../bin/py.test,sha256=wUPfV_CcbVhkMgrOQjWL9c3-021BvAs_V-0q0kkdCuE,290
+../../bin/pytest,sha256=wUPfV_CcbVhkMgrOQjWL9c3-021BvAs_V-0q0kkdCuE,290
 _pytest/__init__.py,sha256=6Ff5v_9CZKpy1l87AT5cIHOfMA9kdTtzhl2G3QjYC9Q,239
 _pytest/__pycache__/__init__.cpython-312.pyc,,
 _pytest/__pycache__/_argcomplete.cpython-312.pyc,,

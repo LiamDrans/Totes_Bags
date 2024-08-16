@@ -71,4 +71,6 @@ resource "aws_s3_object" "lambda_code" {
     key      = "${each.key}/function.zip"
     source   = "${path.module}/../packages/${each.key}/function.zip"
     etag     = filemd5("${path.module}/../packages/${each.key}/function.zip")
+    # source_hash = data.archive_file.for_each[each.key].output_base64sha256  
+       
 }
