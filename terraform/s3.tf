@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "data_ingestion" {
     bucket_prefix = "totes-data-"
+    force_destroy = true
 
     tags = {
         Name ="DataIngestionBucket"
@@ -9,6 +10,7 @@ resource "aws_s3_bucket" "data_ingestion" {
 
 resource "aws_s3_bucket" "code_bucket" {
     bucket_prefix = "totes-lambda-code-"
+    force_destroy = true
 
     tags = {
         Name = "LambdaCodeBucket"
@@ -106,6 +108,6 @@ resource "aws_s3_object" "lambda_layer" {
   bucket = aws_s3_bucket.code_bucket.bucket
   key    = "layer/layer.zip"
   source = data.archive_file.layer_code.output_path
-  etag   = filemd5("${path.module}/../packages/layer/layer.zip")
+  source_hash =    filemd5("${path.module}/../packages/layer/layer.zip")
   depends_on = [ data.archive_file.layer_code ]
 }
