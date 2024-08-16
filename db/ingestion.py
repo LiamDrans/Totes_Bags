@@ -14,7 +14,7 @@ def lambda_handler():
 
     bucket_name = get_data_bucket_name()
 
-    s3 = boto3.client('s3')
+    s3 = boto3.client('s3', region_name='eu-west-2')
     
     s3.upload_file(
         'db/json_files/db_totes.zip',
