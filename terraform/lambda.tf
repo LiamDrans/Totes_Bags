@@ -1,3 +1,7 @@
+locals {
+  combined_hash_code = "${filemd5("${path.module}/../src/extract.py")}-${filemd5("${path.module}/../pyproject.toml")}"
+}
+
 data "archive_file" "extract" {
     type        = "zip"
     output_path = "${path.module}/../packages/extract/function.zip"
@@ -18,7 +22,7 @@ data "archive_file" "load" {
 
 resource "aws_lambda_function" "task_extract" {
     function_name    = var.extract_lambda
-    source_code_hash = data.archive_file.extract.output_base64sha256
+    source_code_hash = local.combined_hash_code
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.extract_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
@@ -32,7 +36,7 @@ resource "aws_lambda_function" "task_extract" {
 
 resource "aws_lambda_function" "task_transform" {
     function_name    = var.transform_lambda
-    source_code_hash = data.archive_file.transform_lambda.output_base64sha256
+    source_code_hash = data.archive_file.transform.output_base64sha256
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.transform_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
@@ -45,7 +49,7 @@ resource "aws_lambda_function" "task_transform" {
 
 resource "aws_lambda_function" "task_load" {
     function_name    = var.load_lambda
-    source_code_hash = data.archive_file.load_lambda.output_sha256
+    source_code_hash = data.archive_file.load.output_sha256
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.load_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn

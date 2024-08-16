@@ -21,6 +21,7 @@ data "archive_file" "layer_code" {
 
 resource "aws_lambda_layer_version" "dependencies" {
   layer_name = "requests_dependencies_layer"
+  source_code_hash = local.combined_hash_code
   s3_bucket  = aws_s3_object.lambda_layer.bucket
   s3_key     = aws_s3_object.lambda_layer.key
   depends_on = [ aws_s3_object.lambda_layer ]
