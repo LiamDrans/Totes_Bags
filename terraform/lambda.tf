@@ -1,23 +1,23 @@
 locals {
-  combined_hash_code = "${filemd5("${path.module}/../src/extract.py")}-${filemd5("${path.module}/../pyproject.toml")}"
+  combined_hash_code = "${filemd5("${path.module}/../packages/extract/function.zip")}-${filemd5("${path.module}/../pyproject.toml")}"
 }
 
 data "archive_file" "extract" {
     type        = "zip"
     output_path = "${path.module}/../packages/extract/function.zip"
-    source_file = "${path.module}/../src/extract.py"
+    source_dir  = "${path.module}/../src/extract"
 }
 
 data "archive_file" "transform" {
     type        = "zip"
-    output_path = "${path.module}/../packages/transform/function.zip"
-    source_file = "${path.module}/../src/transform.py"
+    output_path = "${path.module}/../packages/transform/function.zip"    
+    source_dir  = "${path.module}/../src/transform"
 }
 
 data "archive_file" "load" {
     type        = "zip"
     output_path = "${path.module}/../packages/load/function.zip"
-    source_file = "${path.module}/../src/load.py"
+    source_dir  = "${path.module}/../src/load"
 }
 
 resource "aws_lambda_function" "task_extract" {

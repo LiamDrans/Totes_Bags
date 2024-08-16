@@ -44,17 +44,6 @@ data "aws_iam_policy_document" "secrets_manager_document" {
 }
 
 
-# data "aws_iam_policy_document" "rds_document" {
-#     statement {
-
-#     actions = ["secretsmanager:GetSecretValue",
-# 				"secretsmanager:DescribeSecret"]
-
-#     resources = [
-#         "arn:aws:secretsmanager:eu-west-2:730335560557:secret:totesys_db-*",
-#     ]
-#   }
-# }
 
 resource "aws_iam_policy" "s3_policy" {
     name_prefix = "s3-policy-totes-lambda-"
