@@ -1,11 +1,7 @@
 ''' initial crud operations for the database '''
-import time
-import json
-from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Optional, Union, Dict, List
-from db.connection import CreateConnection
 from pg8000.native import Connection, identifier, Error
-from db.utils.json_io import save_json
+from db.connection import CreateConnection
 from db.utils.helpers import format_response
 
 def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
@@ -59,7 +55,7 @@ def fetch_all_tables() -> List|bool:
 
                 return_list.append(table_data)
         
-            return save_json(return_list)
+            return return_list
 
         except Error as e:
             print(str(e))
