@@ -1,5 +1,6 @@
 ''' initial crud operations for the database '''
 import time
+import json
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Optional, Union, Dict, List
 from db.connection import CreateConnection
@@ -46,24 +47,22 @@ def fetch_table_names(conn: Optional[Connection] = None) -> Union[List, bool]:
     return False
 
 
-def save_all_tables() -> List|bool:
+def fetch_all_tables() -> List|bool:
     ''' fetches data from all the tables '''
     with CreateConnection() as conn:
         try:
             table_names = fetch_table_names(conn)
+            return_list = []
 
             for name in table_names:
                 table_data = fetch_one_table(name, conn)
-                filename = f'./db/json_files/db_totes_{name}.json'
 
-                save_json(table_data, filename)
-
-            with ZipFile('./db/json_files/db_totes.zip', 'w', ZIP_DEFLATED, compresslevel=9) as z:
-                for name in table_names:
-                    z.write(f'./db/json_files/db_totes_{name}.json')
+                return_list.append(table_data)
+        
+            return save_json(return_list)
 
         except Error as e:
             print(str(e))
 
 if __name__ == '__main__':
-    save_all_tables()
+    fetch_all_tables()
