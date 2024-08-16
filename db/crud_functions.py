@@ -41,7 +41,7 @@ def fetch_table_names(conn: Optional[Connection] = None) -> Union[List, bool]:
     sql = """SELECT table_name FROM information_schema.tables
              WHERE table_schema='public' AND table_name ~ '^[a-z]'
     """
-    if (rows:= query_db(sql)):
+    if (rows:= query_db(sql, conn)):
         return [row[0] for row in rows]
     return False
 
