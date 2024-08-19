@@ -22,7 +22,7 @@ class CreateConnection:
                 host=secret["HOSTNAME"],
                 password=secret["PASSWORD"],
                 database=secret["DATABASE"],
-                port=secret["PORT"],
+                port=secret["PORT"]
             )
             return self.connection
         except Error as e:
