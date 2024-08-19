@@ -735,20 +735,6 @@ files = [
 ]
 
 [[package]]
-name = "mirakuru"
-version = "2.5.2"
-description = "Process executor (not only) for tests."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "mirakuru-2.5.2-py3-none-any.whl", hash = "sha256:90c2d90a8cf14349b2f33e6db30a16acd855499811e0312e56cf80ceacf2d3e5"},
-    {file = "mirakuru-2.5.2.tar.gz", hash = "sha256:41ca583d355eb7a6cfdc21c1aea549979d685c27b57239b88725434f115a7132"},
-]
-
-[package.dependencies]
-psutil = {version = ">=4.0.0", markers = "sys_platform != \"cygwin\""}
-
-[[package]]
 name = "packaging"
 version = "24.1"
 description = "Core utilities for Python packages"
@@ -817,17 +803,6 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
-name = "port-for"
-version = "0.7.2"
-description = "Utility that helps with local TCP ports management. It can find an unused TCP localhost port and remember the association."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "port-for-0.7.2.tar.gz", hash = "sha256:074f29335130578aa42fef3726985e57d01c15189e509633a8a1b0b7f9226349"},
-    {file = "port_for-0.7.2-py3-none-any.whl", hash = "sha256:16b279ab4f210bad33515c45bd9af0c6e048ab24c3b6bbd9cfc7e451782617df"},
-]
-
-[[package]]
 name = "psutil"
 version = "6.0.0"
 description = "Cross-platform lib for process and system monitoring in Python."
@@ -855,29 +830,6 @@ files = [
 
 [package.extras]
 test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
-
-[[package]]
-name = "psycopg"
-version = "3.2.1"
-description = "PostgreSQL database adapter for Python"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "psycopg-3.2.1-py3-none-any.whl", hash = "sha256:ece385fb413a37db332f97c49208b36cf030ff02b199d7635ed2fbd378724175"},
-    {file = "psycopg-3.2.1.tar.gz", hash = "sha256:dc8da6dc8729dacacda3cc2f17d2c9397a70a66cf0d2b69c91065d60d5f00cb7"},
-]
-
-[package.dependencies]
-typing-extensions = ">=4.4"
-tzdata = {version = "*", markers = "sys_platform == \"win32\""}
-
-[package.extras]
-binary = ["psycopg-binary (==3.2.1)"]
-c = ["psycopg-c (==3.2.1)"]
-dev = ["ast-comments (>=1.1.2)", "black (>=24.1.0)", "codespell (>=2.2)", "dnspython (>=2.1)", "flake8 (>=4.0)", "mypy (>=1.6)", "types-setuptools (>=57.4)", "wheel (>=0.37)"]
-docs = ["Sphinx (>=5.0)", "furo (==2022.6.21)", "sphinx-autobuild (>=2021.3.14)", "sphinx-autodoc-typehints (>=1.12)"]
-pool = ["psycopg-pool"]
-test = ["anyio (>=4.0)", "mypy (>=1.6)", "pproxy (>=2.7)", "pytest (>=6.2.5)", "pytest-cov (>=3.0)", "pytest-randomly (>=3.5)"]
 
 [[package]]
 name = "py"
@@ -1103,24 +1055,6 @@ pytest = ">=4.6"
 
 [package.extras]
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "virtualenv"]
-
-[[package]]
-name = "pytest-postgresql"
-version = "6.0.1"
-description = "Postgresql fixtures and fixture factories for Pytest."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "pytest_postgresql-6.0.1-py3-none-any.whl", hash = "sha256:be4e57d6a75017bfa532730069677b5ba19336fc8bd12b2af3e158a3b1580ce2"},
-    {file = "pytest_postgresql-6.0.1.tar.gz", hash = "sha256:87c099c01d50ccb48653a1ae954e4156c6c420aac65f0920a70e68839460c720"},
-]
-
-[package.dependencies]
-mirakuru = "*"
-port-for = ">=0.6.0"
-psycopg = ">=3.0.0"
-pytest = ">=6.2"
-setuptools = "*"
 
 [[package]]
 name = "pytest-testdox"
@@ -1543,17 +1477,6 @@ files = [
 ]
 
 [[package]]
-name = "tzdata"
-version = "2024.1"
-description = "Provider of IANA time zone data"
-optional = false
-python-versions = ">=2"
-files = [
-    {file = "tzdata-2024.1-py2.py3-none-any.whl", hash = "sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252"},
-    {file = "tzdata-2024.1.tar.gz", hash = "sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd"},
-]
-
-[[package]]
 name = "urllib3"
 version = "2.2.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -1573,4 +1496,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "cb4729f144cdf776a1acd3a2ea5c0e44d950f560fca6c8bbfd2dfac68fdd44a4"
+content-hash = "7f635a45a4b77df065d023a6ab1ec20ea587fe9b346edeb74496b3be9d3e4538"
