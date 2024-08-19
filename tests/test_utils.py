@@ -1,7 +1,5 @@
 """Script to pytest all utils functions"""
 import json
-import os
-import pytest
 import boto3
 from moto import mock_aws
 from pytest import mark
