@@ -25,6 +25,10 @@ resource "aws_lambda_function" "task_extract" {
     handler          = "${var.extract_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
+    logging_config {
+        log_format = "Text"
+        log_group = aws_cloudwatch_log_group.logs.name
+    }
     # add layers = ....
 
     depends_on = [aws_s3_object.lambda_code]
@@ -40,6 +44,10 @@ resource "aws_lambda_function" "task_transform" {
     handler          = "${var.transform_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
+    logging_config {
+        log_format = "Text"
+        log_group = aws_cloudwatch_log_group.logs.name
+    }
 
     depends_on = [aws_s3_object.lambda_code]
 }
@@ -73,6 +81,4 @@ resource "aws_s3_object" "lambda_code" {
     key      = "${each.key}/function.zip"
     source   = "${path.module}/../packages/${each.key}/function.zip"
     etag     = filemd5("${path.module}/../packages/${each.key}/function.zip")
-    # source_hash = data.archive_file.for_each[each.key].output_base64sha256
-
 }
