@@ -16,12 +16,9 @@ def test_format_response():
 
 @mark.it('Test JSON Encoder saves JSON and converts datetime and decimal')
 def test_save_json():
-    save_json(resulting_row, 'tests/test_save_json.json')
-    with open('tests/test_save_json.json', 'r', encoding='utf-8') as f:
-        result = json.load(f)
-        assert isinstance(result[0]['created_at'], str)
-        assert isinstance(result[0]['unit_price'], float)
-    os.remove("tests/test_save_json.json")
+    result = json.loads(save_json(resulting_row))
+    assert isinstance(result[0]['created_at'], str)
+    assert isinstance(result[0]['unit_price'], float)
 
 
 # TODO: Implement tests for get_data_bucket_name, use MOTO
