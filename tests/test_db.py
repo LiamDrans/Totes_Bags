@@ -3,11 +3,8 @@ from unittest.mock import patch
 import pytest
 from pytest_postgresql import factories
 from pg8000.native import Connection
-import json
-import datetime
 from pytest import mark
-from db.connection import CreateConnection
-from db.crud_functions import query_db, fetch_one_table, fetch_table_names, save_all_tables
+from db.crud_functions import query_db, fetch_one_table, fetch_table_names, fetch_all_tables
 
 postgresql_my_proc = factories.postgresql_proc(port=9876)
 postgresql = factories.postgresql('postgresql_my_proc')
@@ -80,7 +77,7 @@ def test_fetch_table_names(postgresql):
 
 @mark.describe('testing save_all_tables')
 @patch('db.crud_functions.CreateConnection')
-def test_save_all_tables(MockConnection, postgresql):
+def test_fetch_all_tables(MockConnection, postgresql):
     cur = postgresql.cursor()
     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
     cur.execute("INSERT INTO test (num, data) VALUES (1, 'test data');")
@@ -97,11 +94,6 @@ def test_save_all_tables(MockConnection, postgresql):
         port=postgresql.pgconn.port
     )
 
-
-    save_all_tables()
-    with open('./db/json_files/db_totes_test.json', 'r', encoding='utf-8') as f:
-        result = json.load(f)
-        assert result == {"test":[{"id":1,"num":1,"data":"test data"}]}
-    with open('./db/json_files/db_totes_test2.json', 'r', encoding='utf-8') as f:
-        result = json.load(f)
-        assert result == {"test2":[{"id":1,"num":2,"data":"test data2"}]}
+    result = fetch_all_tables()
+    assert result[0] == {'test': [{'id': 1, 'num': 1, 'data': 'test data'}]}
+    assert result[1] == {'test2': [{'id': 1, 'num': 2, 'data': 'test data2'}]}
