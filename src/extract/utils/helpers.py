@@ -10,3 +10,4 @@ def format_response(columns: List, rows: List, label: str) -> Dict:
     except ValueError as e:
         print(f"An error occurred while running format_response: {e}")
 
+    return 'return' #added for pylint

@@ -52,13 +52,12 @@ def fetch_all_tables() -> List|bool:
 
             for name in table_names:
                 table_data = fetch_one_table(name, conn)
-
                 return_list.append(table_data)
-        
-            return return_list
+                return return_list
 
         except Error as e:
             print(str(e))
+        return 'return' #added for pylint
 
 if __name__ == '__main__':
     fetch_all_tables()
