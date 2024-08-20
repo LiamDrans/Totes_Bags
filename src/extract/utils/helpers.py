@@ -1,4 +1,5 @@
 ''' various helper functions '''
+import logging
 from typing import List, Dict
 
 def format_response(columns: List, rows: List, label: str) -> Dict:
@@ -8,6 +9,7 @@ def format_response(columns: List, rows: List, label: str) -> Dict:
         col_names = [col['name'] for col in columns]
         return { label: [dict(zip(col_names, row)) for row in rows] }
     except ValueError as e:
-        print(f"An error occurred while running format_response: {e}")
+        logging.error(f"An error occurred while running format_response: {e}")
+        raise e
 
     return 'return' #added for pylint

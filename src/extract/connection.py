@@ -1,4 +1,5 @@
 """Function to form connection to the totesys database"""
+import logging
 
 from pg8000.native import Connection, Error
 from dotenv import load_dotenv
@@ -16,6 +17,7 @@ class CreateConnection:
     def __enter__(self):
         try:
             secret = get_db_credentials("totesys_db")
+            print('connecting to database totesys_db')
 
             self.connection = Connection(
                 secret["USERNAME"],
@@ -26,7 +28,9 @@ class CreateConnection:
             )
             return self.connection
         except Error as e:
+            logging.error("Error in connection to database: %s", e)
             return str(e)
+
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         print("closing connection...")

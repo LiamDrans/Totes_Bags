@@ -1,5 +1,6 @@
 ''' Converter functions '''
 import json
+import logging
 from typing import Dict
 from decimal import Decimal
 from datetime import datetime
@@ -23,5 +24,5 @@ def save_json(data: Dict) -> None:
     try:
         return json.dumps(data, separators=(',', ':'), cls=CustomJSONEncoder)
     except ValueError as e:
-        print(f"An error occurred while running save_json: {e}")
-    return 'return' #added for pylint
+        logging.error(f"An error occurred while running save_json: {e}")
+        raise e

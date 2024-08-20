@@ -1,4 +1,5 @@
 ''' initial crud operations for the database '''
+import logging
 from typing import Optional, Union, Dict, List
 from pg8000.native import Connection, identifier, Error
 from connection import CreateConnection
@@ -15,6 +16,7 @@ def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
     """
     if not isinstance(conn, Connection):
         with CreateConnection() as new_conn:
+            print(f'running query {sql}, on totesys_db')
             return new_conn.run(sql)
     return conn.run(sql)
 
@@ -29,7 +31,9 @@ def fetch_one_table(table_name: str, conn: Optional[Connection] = None) -> Union
         Dict: table data formatted into a dictionary or False if no data is returned
     """
     if rows:= query_db(f'SELECT * FROM {identifier(table_name)};', conn):
+        print(f'formatting data from {table_name}')
         return format_response(conn.columns, rows, label=table_name)
+    logging.error(f'table {table_name} not found in {conn}')
     return False
 
 
@@ -39,7 +43,9 @@ def fetch_table_names(conn: Optional[Connection] = None) -> Union[List, bool]:
              WHERE table_schema='public' AND table_name ~ '^[a-z]'
     """
     if (rows:= query_db(sql, conn)):
+        print('fetching table names from database')
         return [row[0] for row in rows]
+    logging.warning(f'no table names found in {conn}')
     return False
 
 
@@ -56,8 +62,7 @@ def fetch_all_tables() -> List|bool:
                 return return_list
 
         except Error as e:
-            print(str(e))
-        return 'return' #added for pylint
+            logging.error(f'error in fetching all tables: {e}')
 
 if __name__ == '__main__':
     fetch_all_tables()

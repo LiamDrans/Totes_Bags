@@ -1,4 +1,6 @@
 """these functions will get the bucket list and return the bucket"""
+import logging
+
 import boto3
 
 
@@ -18,5 +20,5 @@ def get_data_bucket_name():
                 return bucket['Name']
         raise ValueError(f"No bucket found with prefix: {bucket_prefix}")
     except ValueError as e:
-        print(f"An error occurred while accessing S3: {e}")
-        raise
+        logging.error(f'error occurred while accessing S3: {e}')
+        raise e
