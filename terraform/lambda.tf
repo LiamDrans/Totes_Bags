@@ -25,11 +25,17 @@ resource "aws_lambda_function" "task_extract" {
     handler          = "${var.extract_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
+    layers           = [aws_lambda_layer_version.dependencies.arn]
+    memory_size      = 256
     logging_config {
         log_format = "Text"
         log_group = aws_cloudwatch_log_group.logs.name
     }
-    # add layers = ....
+    environment {
+      variables = {
+        TZ="Europe/London"
+    }
+    }
 
     depends_on = [aws_s3_object.lambda_code]
     #needs to depend on layer also
@@ -71,6 +77,7 @@ resource "aws_lambda_function" "task_load" {
         BUCKET_NAME = aws_s3_bucket.data_ingestion.id
         }
     }
+
 
     depends_on = [aws_s3_object.lambda_code]
 }

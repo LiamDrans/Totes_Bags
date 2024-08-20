@@ -59,4 +59,3 @@ resource "aws_sns_topic_subscription" "sks"{
 #       value_source = "emailHeader"
 #   }
 # }
-

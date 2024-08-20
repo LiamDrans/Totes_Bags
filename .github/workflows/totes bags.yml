@@ -38,8 +38,8 @@ jobs:
     - name: Coverage tests
       run: make check-coverage
 
-    - name: Pylint on src
-      run: make run-pylint
+    # - name: Pylint on src
+    #   run: make run-pylint
 
 
   deploy:

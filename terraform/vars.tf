@@ -15,7 +15,7 @@ variable "load_lambda" {
 
 variable "default_timeout" {
     type    = number
-    default = 5
+    default = 30
 }
 
 # can add a variable state machine name if need be
