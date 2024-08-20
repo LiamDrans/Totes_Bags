@@ -5,10 +5,16 @@ import boto3
 from crud_functions import fetch_all_tables
 from utils.get_bucket_names import get_data_bucket_name
 from utils.json_io import save_json
+import logging
 
 def lambda_handler(event, context):
     """lambda function to put zip on S3 Bucket"""
-    event = context #for pylintt
+
+    print('hello world')
+    logging.info('hello world')
+    logging.error('this is an error')
+
+    event = context #for pylint
     context = event #for pylint
 
     full_data = fetch_all_tables()

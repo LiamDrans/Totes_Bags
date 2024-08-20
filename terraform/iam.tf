@@ -43,6 +43,17 @@ data "aws_iam_policy_document" "secrets_manager_document" {
   }
 }
 
+data "aws_iam_policy_document" "cloudwatch_logs_policy_document" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+}
+
 data "aws_iam_policy_document" "cw_document" {
   statement {
 
@@ -75,6 +86,11 @@ resource "aws_iam_policy" "secrets_manager_policy" {
     policy      = data.aws_iam_policy_document.secrets_manager_document.json
 }
 
+resource "aws_iam_policy" "cloudwatch_logs_policy" {
+  name_prefix = "cloudwatch-logs-policy-totes-lambda-"
+  policy      = data.aws_iam_policy_document.cloudwatch_logs_policy_document.json
+}
+
 resource "aws_iam_policy" "cw_policy" {
   name_prefix = "cw-policy-totes-lambda-"
   policy      = data.aws_iam_policy_document.cw_document.json
@@ -88,6 +104,11 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
 resource "aws_iam_role_policy_attachment" "lambda_secrets_manager_policy_attachment" {
     role       = aws_iam_role.lambda_role.name
     policy_arn = aws_iam_policy.secrets_manager_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_cloudwatch_logs_policy_attachment" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.cloudwatch_logs_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
