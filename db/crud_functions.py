@@ -1,11 +1,11 @@
 ''' initial crud operations for the database '''
+import time
 from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Optional, Union, Dict, List
-from connection import CreateConnection
+from db.connection import CreateConnection
 from pg8000.native import Connection, identifier, Error
-from utils.json_io import save_json
-from utils.helpers import format_response
-
+from db.utils.json_io import save_json
+from db.utils.helpers import format_response
 
 def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
     """Query the database and return the result as a list, or None if no rows are returned.
@@ -31,19 +31,15 @@ def fetch_one_table(table_name: str, conn: Optional[Connection] = None) -> Union
     Returns:
         Dict: table data formatted into a dictionary or False if no data is returned
     """
-    if (rows:= query_db(f'SELECT * FROM {identifier(table_name)};', conn)):
+    if rows:= query_db(f'SELECT * FROM {identifier(table_name)};', conn):
         return format_response(conn.columns, rows, label=table_name)
     return False
 
 
 def fetch_table_names(conn: Optional[Connection] = None) -> Union[List, bool]:
     ''' fetches all public table names from database '''
-    sql = """
-        SELECT
-            table_name
-        FROM
-            information_schema.tables
-        WHERE table_schema='public' AND table_name ~ '^[a-z]'
+    sql = """SELECT table_name FROM information_schema.tables
+             WHERE table_schema='public' AND table_name ~ '^[a-z]'
     """
     if (rows:= query_db(sql, conn)):
         return [row[0] for row in rows]

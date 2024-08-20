@@ -20,5 +20,8 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 def save_json(data: Dict, filename: str) -> None:
     ''' saves json file to destination '''
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, separators=(',', ':'), cls=CustomJSONEncoder)
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, separators=(',', ':'), cls=CustomJSONEncoder)
+    except ValueError as e:
+        print(f"An error occurred while running save_json: {e}")
