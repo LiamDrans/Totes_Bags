@@ -1,6 +1,6 @@
 ''' Converter functions '''
 import json
-from typing import Dict
+from typing import List, Dict, Union
 from decimal import Decimal
 from datetime import datetime
 
@@ -19,9 +19,9 @@ class CustomJSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-def json_encode(data: Dict) -> None:
+def json_encode(data: Union[Dict, List]) -> None:
     ''' saves json file to destination '''
-    try:
-        return json.dumps(data, separators=(',', ':'), cls=CustomJSONEncoder)
-    except ValueError as e:
-        print(f"An error occurred while running save_json: {e}")
+    if not isinstance(data, (dict, list)):
+        raise TypeError('argument needs to be a dictionary')
+
+    return json.dumps(data, separators=(',', ':'), cls=CustomJSONEncoder)

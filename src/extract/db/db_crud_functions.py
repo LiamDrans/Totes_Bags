@@ -2,8 +2,8 @@
 
 from typing import Optional, Union, Dict, List
 from pg8000.native import Connection, identifier, Error
-from db.connection import CreateConnection
-from db.utils.helpers import format_response
+from .connection import CreateConnection
+from ..utils.helpers import format_response
 
 
 def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
@@ -76,9 +76,9 @@ def fetch_all_tables(updates = False) -> Union[List, bool]:
     with CreateConnection() as conn:
         try:
             fetcher = fetch_updated_rows if updates else fetch_table
-            return [row for name in fetch_table_names(conn) if (row:= fetcher(conn, name))]
+            return [row for name in fetch_table_names(conn) if (row:= fetcher(name, conn))]
         except Error as e:
             return str(e)
 
 if __name__ == "__main__":
-    fetch_all_tables()
+    print(fetch_all_tables())

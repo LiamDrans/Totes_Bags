@@ -1,6 +1,6 @@
 """context manager connection class for totesys database"""
 from pg8000.native import Connection, Error
-from db.db_credentials import get_db_credentials
+from .db_credentials import get_db_credentials
 
 
 class CreateConnection:

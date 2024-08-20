@@ -1,17 +1,21 @@
 """test script for the db functions"""
 from unittest.mock import patch
-import pytest
 from pytest_postgresql import factories
 from pg8000.native import Connection
 from pytest import mark
-from db.crud_functions import query_db, fetch_one_table, fetch_table_names, fetch_all_tables
+from src.extract.db.db_crud_functions import (
+    query_db,
+    fetch_table,
+    fetch_table_names,
+    fetch_all_tables
+)
 
 postgresql_my_proc = factories.postgresql_proc(port=9876)
 postgresql = factories.postgresql('postgresql_my_proc')
 
 
 @mark.it('Test connection to database and pulls one row')
-@patch('db.crud_functions.CreateConnection')
+@patch('src.extract.db.db_crud_functions.CreateConnection')
 def test_query_db_returns_all_data_with_appropriate_query(MockConnection, postgresql):
     cur = postgresql.cursor()
     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
@@ -50,7 +54,7 @@ def test_fetch_one_table_returns_only_one_table(postgresql):
     )
 
     with database_connection as conn:
-        result = fetch_one_table('test', conn)
+        result = fetch_table('test', conn)
         assert result == {'test': [{'id': 1, 'num': 1, 'data': 'test data'}]}
 
 @mark.describe('testing fetch_table_names')
@@ -75,8 +79,8 @@ def test_fetch_table_names(postgresql):
         table_names = fetch_table_names(conn)
         assert table_names == ['test', 'test2']
 
-@mark.describe('testing save_all_tables')
-@patch('db.crud_functions.CreateConnection')
+@mark.describe('testing fetch_all_tables')
+@patch('src.extract.db.db_crud_functions.CreateConnection')
 def test_fetch_all_tables(MockConnection, postgresql):
     cur = postgresql.cursor()
     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")

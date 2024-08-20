@@ -19,7 +19,7 @@ def get_bucket_name(bucket_prefix: str) -> str:
         s3 = boto3.resource('s3')
         bucket_list = s3.buckets.all()
 
-        if not bucket_list:
+        if not list(bucket_list):
             raise ValueError('No buckets found in S3')
 
         for bucket in bucket_list:
@@ -28,7 +28,7 @@ def get_bucket_name(bucket_prefix: str) -> str:
         raise ValueError(f'No bucket found with prefix: {bucket_prefix}')
 
     except ClientError as err:
-        logger.error('An error occurred while accessing S3: %s', err)
+        logger.error(err)
         raise err
 
 
@@ -44,7 +44,7 @@ def get_bucket_file_count(bucket_name: str) -> int:
         response = s3.list_objects_v2(Bucket=bucket_name)
         return len(response.get('Contents', []))
     except ClientError as err:
-        logger.error('An error occurred while accessing S3: %s', err)
+        logger.error(err)
         raise err
 
 
@@ -64,7 +64,7 @@ def bucket_has_file(bucket_name: str, file_name: str) -> bool:
         return False
 
     except ClientError as err:
-        logger.error('An error occurred while accessing S3: %s', err)
+        logger.error(err)
         raise err
 
 
@@ -78,11 +78,11 @@ def upload_to_bucket(obj: Dict) -> None:
         s3_client = boto3.client('s3')
         s3_client.put_object(**obj)
     except ClientError as err:
-        logger.error('An error occurred while uploading to S3: %s', err)
+        logger.error(err)
         raise err
 
 
 if __name__ == '__main__':
-    totes_bucket = get_bucket_name('totes-data-')
-    print(get_bucket_file_count(totes_bucket))
-    print(bucket_has_file(totes_bucket, 'latest_db_totes.json'))
+    # totes_bucket = get_bucket_name('totes-data-')
+    print(get_bucket_file_count('nonsense_name'))
+    # print(bucket_has_file(totes_bucket, 'latest_db_totes.json'))

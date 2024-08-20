@@ -1,19 +1,20 @@
-"""Script for lambda_handler"""
+""" lambda_handler for handling uploading table data to S3 Bucket """
 
-from db.db_crud_functions import fetch_all_tables
-from db.s3_crud_functions import get_bucket_name, bucket_file_count, upload_to_bucket
-from db.utils.json import json_encode
-from db.utils.helpers import prepend_time
+from .db.db_crud_functions import fetch_all_tables
+from .s3_crud_functions import get_bucket_name, get_bucket_file_count, upload_to_bucket
+from .utils.json import json_encode
+from .utils.helpers import prepend_time
 
+# pylint: disable=unused-argument
 def lambda_handler(event, context) -> None:
     """lambda function to upload totes table data in json format to S3 Bucket"""
     bucket_name = get_bucket_name('totes-data-')
-    is_update = bucket_file_count(bucket_name)
+    is_update = get_bucket_file_count(bucket_name)
     totes_tables = fetch_all_tables(updates=is_update)
 
     if not totes_tables:
         print('No new updates to be added to the data bucket')
-        return
+        return False
 
     totes_tables_json = json_encode(totes_tables)
 
@@ -29,7 +30,9 @@ def lambda_handler(event, context) -> None:
         'Key': 'latest_db_totes.json' if is_update else 'full_db_totes.json'
     })
 
+    return True
+
 if __name__ == '__main__':
-    lambda_handler(event=True, context=True)
+    lambda_handler(event={}, context={})
     # with open('./db/json_files/zzz_db_totesys.json', 'w', encoding='utf-8') as f:
     #     f.write(save_json(fetch_all_tables()))
