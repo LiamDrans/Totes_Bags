@@ -18,7 +18,8 @@ class CustomJSONEncoder(json.JSONEncoder):
         # Default behavior for all other types
         return super().default(o)
 
-def save_json(data: Dict) -> None:
+
+def json_encode(data: Dict) -> None:
     ''' saves json file to destination '''
     try:
         return json.dumps(data, separators=(',', ':'), cls=CustomJSONEncoder)

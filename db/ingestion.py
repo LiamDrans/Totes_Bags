@@ -1,38 +1,33 @@
 """Script for lambda_handler"""
 
-import datetime
-import boto3
-from db.crud_functions import fetch_all_tables
-from db.utils.get_bucket_names import get_data_bucket_name
-from db.utils.json_io import save_json
-from db.utils.get_bucket_names import check_bucket_has_files
+from db.db_crud_functions import fetch_all_tables
+from db.s3_crud_functions import get_bucket_name, bucket_file_count, upload_to_bucket
+from db.utils.json import json_encode
+from db.utils.helpers import prepend_time
 
-def lambda_handler(event, context):
+def lambda_handler(event, context) -> None:
+    """lambda function to upload totes table data in json format to S3 Bucket"""
+    bucket_name = get_bucket_name('totes-data-')
+    is_update = bucket_file_count(bucket_name)
+    totes_tables = fetch_all_tables(updates=is_update)
 
-    """lambda function to put zip on S3 Bucket"""
-    bucket_name = get_data_bucket_name("totes-data-")
-    updates = check_bucket_has_files(bucket_name) 
-    full_data = fetch_all_tables(updates=updates)
-    
-    if not full_data:
-        print("No new updates to be added to the data bucket")
+    if not totes_tables:
+        print('No new updates to be added to the data bucket')
         return
-    
-    full_data_json = save_json(full_data)
 
-    s3 = boto3.client('s3', region_name='eu-west-2')
-    
-    s3.put_object(
-        Body=full_data_json,
-        Bucket=bucket_name,
-        Key=f'{datetime.datetime.now().year}/{datetime.datetime.strptime(f"{datetime.datetime.now().month}", "%m").strftime("%B")}/{datetime.datetime.now().day}/{datetime.datetime.now().strftime('%H:%M:%S')}_db_totes.json'
-    )
+    totes_tables_json = json_encode(totes_tables)
 
-    s3.put_object(
-        Body=full_data_json,
-        Bucket=bucket_name,
-        Key='latest_db_totes.json' if updates else 'full_db_totes.json'
-    )
+    upload_to_bucket({
+        'Body': totes_tables_json,
+        'Bucket': bucket_name,
+        'Key': prepend_time('_db_totes.json')
+    })
+
+    upload_to_bucket({
+        'Body': totes_tables_json,
+        'Bucket': bucket_name,
+        'Key': 'latest_db_totes.json' if is_update else 'full_db_totes.json'
+    })
 
 if __name__ == '__main__':
     lambda_handler(event=True, context=True)

@@ -1,10 +1,8 @@
 """Getting from the db_credentials from AWS Secrets Manager"""
-
 import json
 import boto3
 
-
-def get_db_credentials(secret_name):
+def get_db_credentials(secret_name: str):
     """Retrieves the database credentials"""
 
     client = boto3.client("secretsmanager", region_name="eu-west-2")
