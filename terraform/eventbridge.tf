@@ -6,15 +6,15 @@ resource "aws_cloudwatch_event_rule" "every_30_minutes" {
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
   rule      = aws_cloudwatch_event_rule.every_30_minutes.name
-  target_id = "extract"
-  arn       = aws_lambda_function.extract.arn
+  target_id = "task_extract"
+  arn       = aws_lambda_function.task_extract.arn
 }
 
 
 resource "aws_lambda_permission" "allow_eventbridge" {
   statement_id  = "AllowEventBridgeInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.extract.function_name
+  function_name = aws_lambda_function.task_extract.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.every_30_minutes.arn
 }
