@@ -32,7 +32,7 @@ resource "aws_cloudwatch_metric_alarm" "alarm" {
   statistic           = "Sum"
   period              = 30
   threshold           = 1
-  alarm_actions       = [aws_sns_topic.monitoring.arn]
+  alarm_actions     = [aws_sns_topic.monitoring.arn]
 }
 
 resource "aws_sns_topic" "monitoring" {

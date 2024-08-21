@@ -1,28 +1,24 @@
-locals {
-  combined_hash_code = "${filemd5("${path.module}/../packages/extract/function.zip")}-${filemd5("${path.module}/../pyproject.toml")}"
+data "archive_file" "extract_lambda" {
+    type        = "zip"
+    output_path = "${path.module}/../packages/extract_sample/function.zip"
+    source_file = "${path.module}/../src/extract_sample.py"
 }
 
-data "archive_file" "extract" {
+data "archive_file" "transform_lambda" {
     type        = "zip"
-    output_path = "${path.module}/../packages/extract/function.zip"
-    source_dir  = "${path.module}/../src/extract"
+    output_path = "${path.module}/../packages/transform_sample/function.zip"
+    source_file = "${path.module}/../src/transform_sample.py"
 }
 
-data "archive_file" "transform" {
+data "archive_file" "load_lambda" {
     type        = "zip"
-    output_path = "${path.module}/../packages/transform/function.zip"    
-    source_dir  = "${path.module}/../src/transform"
-}
-
-data "archive_file" "load" {
-    type        = "zip"
-    output_path = "${path.module}/../packages/load/function.zip"
-    source_dir  = "${path.module}/../src/load"
+    output_path = "${path.module}/../packages/load_sample/function.zip"
+    source_file = "${path.module}/../src/load_sample.py"
 }
 
 resource "aws_lambda_function" "task_extract" {
     function_name    = var.extract_lambda
-    source_code_hash = local.combined_hash_code
+    source_code_hash = data.archive_file.extract_lambda.output_base64sha256
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.extract_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
@@ -41,12 +37,13 @@ resource "aws_lambda_function" "task_extract" {
     }
     }
 
-    depends_on = [aws_s3_object.lambda_code, aws_lambda_layer_version.dependencies]
+    depends_on = [aws_s3_object.lambda_code]
+    #needs to depend on layer also
 }
 
 resource "aws_lambda_function" "task_transform" {
     function_name    = var.transform_lambda
-    source_code_hash = data.archive_file.transform.output_base64sha256
+    source_code_hash = data.archive_file.transform_lambda.output_base64sha256
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.transform_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
@@ -63,7 +60,7 @@ resource "aws_lambda_function" "task_transform" {
 
 resource "aws_lambda_function" "task_load" {
     function_name    = var.load_lambda
-    source_code_hash = data.archive_file.load.output_sha256
+    source_code_hash = data.archive_file.load_lambda.output_sha256
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.load_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
@@ -91,6 +88,4 @@ resource "aws_s3_object" "lambda_code" {
     key      = "${each.key}/function.zip"
     source   = "${path.module}/../packages/${each.key}/function.zip"
     etag     = filemd5("${path.module}/../packages/${each.key}/function.zip")
-    # source_hash = data.archive_file.for_each[each.key].output_base64sha256  
-       
 }
