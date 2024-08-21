@@ -4,12 +4,12 @@ import boto3
 from moto import mock_aws
 from pytest import mark
 from pg8000.native import Connection
-from src.extract.extract import lambda_handler
-from src.extract.utils.json import json_encode
+from src.extract.app.extract import lambda_handler
+from src.extract.app.utils.json import json_encode
 
 @mark.it('Test lambda function successfully upload full database on first run')
 @mock_aws
-@patch('src.extract.db.db_crud_functions.CreateConnection')
+@patch('src.extract.app.db.db_crud_functions.CreateConnection')
 def test_lambda_handler_upload(MockConnection, postgresql):
     cur = postgresql.cursor()
     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, last_updated timestamp);")
@@ -41,7 +41,7 @@ def test_lambda_handler_upload(MockConnection, postgresql):
 
 @mark.it('Test lambda function successfully uploads only the updates when run')
 @mock_aws
-@patch('src.extract.db.db_crud_functions.CreateConnection')
+@patch('src.extract.app.db.db_crud_functions.CreateConnection')
 def test_lambda_handler_update(MockConnection, postgresql):
     cur = postgresql.cursor()
     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, last_updated timestamp);")
@@ -89,7 +89,7 @@ def test_lambda_handler_update(MockConnection, postgresql):
 
 @mark.it('Test lambda handler with no updates')
 @mock_aws
-@patch('src.extract.db.db_crud_functions.CreateConnection')
+@patch('src.extract.app.db.db_crud_functions.CreateConnection')
 def test_lambda_handler_no_update(MockConnection, postgresql):
     cur = postgresql.cursor()
     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, last_updated timestamp);")

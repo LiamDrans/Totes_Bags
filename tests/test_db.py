@@ -3,7 +3,7 @@ from unittest.mock import patch
 from pytest_postgresql import factories
 from pg8000.native import Connection
 from pytest import mark, raises
-from src.extract.db.db_crud_functions import (
+from src.extract.app.db.db_crud_functions import (
     query_db,
     fetch_table,
     fetch_table_names,
@@ -15,7 +15,7 @@ postgresql = factories.postgresql('postgresql_my_proc')
 
 
 @mark.it('Test connection to database and pulls one row')
-@patch('src.extract.db.db_crud_functions.CreateConnection')
+@patch('src.extract.app.db.db_crud_functions.CreateConnection')
 def test_query_db_returns_all_data_with_appropriate_query(MockConnection, postgresql):
     cur = postgresql.cursor()
     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
@@ -80,7 +80,7 @@ def test_fetch_table_names(postgresql):
         assert table_names == ['test', 'test2']
 
 @mark.it('testing fetch_all_tables')
-@patch('src.extract.db.db_crud_functions.CreateConnection')
+@patch('src.extract.app.db.db_crud_functions.CreateConnection')
 def test_fetch_all_tables(MockConnection, postgresql):
     cur = postgresql.cursor()
     cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
@@ -103,7 +103,7 @@ def test_fetch_all_tables(MockConnection, postgresql):
     assert result[1] == {'test2': [{'id': 1, 'num': 2, 'data': 'test data2'}]}
 
 @mark.it('testing fetch_all_tables_raises_error')
-@patch('src.extract.db.db_crud_functions.CreateConnection')
+@patch('src.extract.app.db.db_crud_functions.CreateConnection')
 def test_fetch_all_tables_error(MockConnection, postgresql):
     cur = postgresql.cursor()
     postgresql.commit()

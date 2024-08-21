@@ -1,5 +1,5 @@
 from pytest import mark
-from src.extract.db.connection import CreateConnection
+from src.extract.app.db.connection import CreateConnection
 
 
 @mark.it('dummy connection test')
