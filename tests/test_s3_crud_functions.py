@@ -4,7 +4,7 @@ import boto3
 from botocore.exceptions import ClientError
 from moto import mock_aws
 from pytest import mark, raises
-from src.extract.s3_crud_functions import (
+from src.extract.app.s3_crud_functions import (
     get_bucket_name,
     get_bucket_file_count,
     bucket_has_file,

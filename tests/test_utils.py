@@ -3,8 +3,8 @@ from datetime import datetime
 from unittest.mock import patch
 import json
 from pytest import mark, raises
-from src.extract.utils.helpers import format_response, prepend_time
-from src.extract.utils.json import json_encode
+from src.extract.app.utils.helpers import format_response, prepend_time
+from src.extract.app.utils.json import json_encode
 from .sample_row import test_row, test_columns, resulting_row
 
 @mark.it('Test format response')
@@ -21,7 +21,7 @@ def test_raises_typerror():
 
 
 @mark.it('Test prepends date to string')
-@patch('src.extract.utils.helpers.datetime')
+@patch('src.extract.app.utils.helpers.datetime')
 def test_prepend_string(date):
     date.now.return_value = datetime(2000,1,1)
     assert prepend_time('_my_file.json') == '2000/January/01/00:00:00_my_file.json'
