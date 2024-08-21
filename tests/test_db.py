@@ -2,7 +2,7 @@
 from unittest.mock import patch
 from pytest_postgresql import factories
 from pg8000.native import Connection
-from pytest import mark
+from pytest import mark, raises
 from src.extract.db.db_crud_functions import (
     query_db,
     fetch_table,
@@ -79,7 +79,7 @@ def test_fetch_table_names(postgresql):
         table_names = fetch_table_names(conn)
         assert table_names == ['test', 'test2']
 
-@mark.describe('testing fetch_all_tables')
+@mark.it('testing fetch_all_tables')
 @patch('src.extract.db.db_crud_functions.CreateConnection')
 def test_fetch_all_tables(MockConnection, postgresql):
     cur = postgresql.cursor()
@@ -101,3 +101,22 @@ def test_fetch_all_tables(MockConnection, postgresql):
     result = fetch_all_tables()
     assert result[0] == {'test': [{'id': 1, 'num': 1, 'data': 'test data'}]}
     assert result[1] == {'test2': [{'id': 1, 'num': 2, 'data': 'test data2'}]}
+
+@mark.it('testing fetch_all_tables_raises_error')
+@patch('src.extract.db.db_crud_functions.CreateConnection')
+def test_fetch_all_tables_error(MockConnection, postgresql):
+    cur = postgresql.cursor()
+    postgresql.commit()
+    cur.close()
+
+    MockConnection.return_value = Connection(
+        postgresql.pgconn.user,
+        host=postgresql.pgconn.host,
+        password=postgresql.pgconn.password,
+        database=postgresql.pgconn.db,
+        port=postgresql.pgconn.port
+    )
+
+    with raises(TypeError) as excinfo:
+        fetch_all_tables()
+    assert "'bool' object is not iterable" in str(excinfo.value)

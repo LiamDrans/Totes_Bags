@@ -75,10 +75,11 @@ def fetch_all_tables(updates = False) -> Union[List, bool]:
     """fetches data from all the tables"""
     with CreateConnection() as conn:
         try:
-            fetcher = fetch_updated_rows if updates else fetch_table
+            fetcher=fetch_updated_rows if updates else fetch_table
             return [row for name in fetch_table_names(conn) if (row:= fetcher(name, conn))]
-        except Error as e:
-            return str(e)
+        except TypeError as e:
+            print(str(e))
+            raise
 
 if __name__ == "__main__":
     print(fetch_all_tables())
