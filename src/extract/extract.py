@@ -1,40 +1,38 @@
-"""Script for lambda_handler"""
+""" lambda_handler for handling uploading table data to S3 Bucket """
 
-import datetime
-import boto3
-from crud_functions import fetch_all_tables
-from utils.get_bucket_names import get_data_bucket_name
-from utils.json_io import save_json
+from .db.db_crud_functions import fetch_all_tables
+from .s3_crud_functions import get_bucket_name, get_bucket_file_count, upload_to_bucket
+from .utils.json import json_encode
+from .utils.helpers import prepend_time
 
-def lambda_handler(event, context):
-    """lambda function to put zip on S3 Bucket"""
-    event = context #for pylintt
-    context = event #for pylint
+# pylint: disable=unused-argument
+def lambda_handler(event, context) -> None:
+    """lambda function to upload totes table data in json format to S3 Bucket"""
+    bucket_name = get_bucket_name('totes-data-')
+    is_update = get_bucket_file_count(bucket_name)
+    totes_tables = fetch_all_tables(updates=is_update)
 
-    full_data = fetch_all_tables()
-    full_data_json = save_json(full_data)
-    bucket_name = get_data_bucket_name()
+    if not totes_tables:
+        print('No new updates to be added to the data bucket')
+        return False
 
-    s3 = boto3.client('s3', region_name='eu-west-2')
+    totes_tables_json = json_encode(totes_tables)
 
-    s3.put_object(
-        Body=full_data_json,
-        Bucket=bucket_name,
-        Key=f'{datetime.datetime.now().year}/'+
-            f'{datetime.datetime.strptime(\
-            f"{datetime.datetime.now().month}", "%m").strftime("%B")}/' +
-            f'{datetime.datetime.now().day}/'+
-            f'{datetime.datetime.now().strftime('%H:%M:%S')}_db_totes.json'
-    )
+    upload_to_bucket({
+        'Body': totes_tables_json,
+        'Bucket': bucket_name,
+        'Key': prepend_time('_db_totes.json')
+    })
 
-    s3.put_object(
-        Body=full_data_json,
-        Bucket=bucket_name,
-        Key='latest_db_totes.json'
-    )
+    upload_to_bucket({
+        'Body': totes_tables_json,
+        'Bucket': bucket_name,
+        'Key': 'latest_db_totes.json' if is_update else 'full_db_totes.json'
+    })
+
+    return True
 
 if __name__ == '__main__':
-    lambda_handler(1,2)
-    print ('pass')
-    # with open('./json_files/zzz_db_totesys.json', 'w', encoding='utf-8') as f:
+    lambda_handler(event={}, context={})
+    # with open('./db/json_files/zzz_db_totesys.json', 'w', encoding='utf-8') as f:
     #     f.write(save_json(fetch_all_tables()))
