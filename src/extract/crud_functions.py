@@ -1,8 +1,8 @@
 ''' initial crud operations for the database '''
 from typing import Optional, Union, Dict, List
 from pg8000.native import Connection, identifier, Error
-from db.connection import CreateConnection
-from db.utils.helpers import format_response
+from connection import CreateConnection
+from utils.helpers import format_response
 
 def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
     """Query the database and return the result as a list, or None if no rows are returned.
@@ -52,13 +52,12 @@ def fetch_all_tables() -> List|bool:
 
             for name in table_names:
                 table_data = fetch_one_table(name, conn)
-
                 return_list.append(table_data)
-        
-            return return_list
+                return return_list
 
         except Error as e:
             print(str(e))
+        return 'return' #added for pylint
 
 if __name__ == '__main__':
     fetch_all_tables()

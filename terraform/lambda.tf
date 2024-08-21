@@ -30,6 +30,12 @@ resource "aws_lambda_function" "task_extract" {
     runtime          = "python3.12"
     timeout          = var.default_timeout
     layers           = [aws_lambda_layer_version.dependencies.arn]
+    memory_size = 256
+    environment {
+      variables = {
+        TZ="Europe/London"
+    }
+    }
 
     depends_on = [aws_s3_object.lambda_code, aws_lambda_layer_version.dependencies]
 }
