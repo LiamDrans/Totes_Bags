@@ -1,7 +1,7 @@
 """ initial crud operations for the database """
 
 from typing import Optional, Union, Dict, List
-from pg8000.native import Connection, identifier, Error
+from pg8000.native import Connection, identifier
 from .connection import CreateConnection
 from ..utils.helpers import format_response
 
