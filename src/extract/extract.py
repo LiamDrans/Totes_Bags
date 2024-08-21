@@ -10,10 +10,6 @@ import logging
 def lambda_handler(event, context):
     """lambda function to put zip on S3 Bucket"""
 
-    print('hello world')
-    logging.info('hello world')
-    logging.error('this is an error')
-
     event = context #for pylint
     context = event #for pylint
 

@@ -28,8 +28,9 @@ resource "aws_cloudwatch_metric_alarm" "alarm" {
   evaluation_periods  = 1
   metric_name         = "ErrorMetric"
   namespace           = "CustomLambdaMetrics"
+  alarm_description   = "This metric notifies when an error occurs"
   statistic           = "Sum"
-  period              = 60
+  period              = 30
   threshold           = 1
   alarm_actions       = [aws_sns_topic.monitoring.arn]
 }
@@ -38,24 +39,8 @@ resource "aws_sns_topic" "monitoring" {
   name = "ErrorTopic"
 }
 
-resource "aws_sns_topic_subscription" "sks"{
+resource "aws_sns_topic_subscription" "emailsubscription" {
   protocol = "email"
   endpoint = "sidleynorthcoders@gmail.com"
   topic_arn = aws_sns_topic.monitoring.arn
 }
-
-# resource "aws_ses_configuration_set" "set" {
-#   name = "ConfigurationSet"
-# }
-
-# resource "aws_ses_event_destination" "destination" {
-#   name               = "Destination"
-#   configuration_set_name = aws_ses_configuration_set.set.name
-#   enabled            = true
-#   matching_types     = ["bounce", "send"]
-#   cloudwatch_destination {
-#       dimension_name = "ErrorAlarm"
-#       default_value  = "Error"
-#       value_source = "emailHeader"
-#   }
-# }
