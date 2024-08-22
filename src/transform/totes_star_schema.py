@@ -4,6 +4,7 @@ from pprint import pprint
 from utils.get_bucket_names import get_data_bucket_name
 import io
 import json
+from copy import deepcopy
 
 def pull_latest_json_from_data_bucket():    
     # bucket_name = get_data_bucket_name()
@@ -27,14 +28,16 @@ def format_list_to_dict_of_dataframes(data_list, table_name):
     return df_dict
 
 
-def dim_design(df):       
+def dim_design(df_old):
+    df=deepcopy(df_old)       
     df.sort_values(by="design_id", inplace=True)
     df.reset_index(inplace=True)
     df.drop(columns=['created_at', 'last_updated', 'index'], inplace=True)
-    pprint(df)
+    # pprint(df)
     return df
 
-def fact_payment(df):
+def fact_payment(df_old):
+    df=deepcopy(df_old) 
     #splitting date time columns    
     df['created_date']=df['created_at'].str.slice(stop=16)
     df['created_time']=df['created_at'].str.slice(start=17)
@@ -64,10 +67,11 @@ def fact_payment(df):
              'payment_date'
              ]]
 
-    print(df)
+    # print(df)
     return df
 
-def fact_sales_order(df):
+def fact_sales_order(df_old):
+    df=deepcopy(df_old) 
     #splitting date time columns    
     df['created_date']=df['created_at'].str.slice(stop=16)
     df['created_time']=df['created_at'].str.slice(start=17)
@@ -100,11 +104,12 @@ def fact_sales_order(df):
              'agreed_delivery_location_id'
              ]]
 
-    pprint(df)
+    # pprint(df)
     return
 
 
-def fact_purchase_order(df):
+def fact_purchase_order(df_old):
+    df=deepcopy(df_old) 
     #splitting date time columns    
     df['created_date']=df['created_at'].str.slice(stop=16)
     df['created_time']=df['created_at'].str.slice(start=17)
@@ -136,21 +141,23 @@ def fact_purchase_order(df):
              'agreed_delivery_location_id'
              ]]
 
-    print(df)
+    # print(df)
     return df
 
 
-def dim_location(df):   
+def dim_location(df_old):
+    df=deepcopy(df_old)    
     #sort and drop columns
     df.sort_values(by="address_id", inplace=True)
     df.reset_index(inplace=True)
     df.drop(columns=['created_at', 'last_updated','index'], inplace=True)  
     df.rename(columns={'address_id':'location_id'},inplace=True) 
 
-    print(df)
+    # print(df)
     return df
 
-def dim_currency(df):   
+def dim_currency(df_old): 
+    df=deepcopy(df_old)   
     #sort and drop columns
     conversion_dict={"GBP": "Pound Sterling",
                      "USD": "United States Dollar",
@@ -160,10 +167,12 @@ def dim_currency(df):
     df.reset_index(inplace=True)
     df.drop(columns=['created_at', 'last_updated','index'], inplace=True)      
     df['currency_name'] = df['currency_code'].map(conversion_dict)
-    print(df)
+    # print(df)
     return df
 
-def dim_staff(df_staff,df_department): 
+def dim_staff(df_staff_old,df_department_old): 
+    df_staff=deepcopy(df_staff_old) 
+    df_department=deepcopy(df_department_old) 
     df=df_staff.merge(df_department, on='department_id', how='left')
     df.drop(columns=['created_at_y', 'last_updated_y','created_at_x', 'last_updated_x','manager','department_id'], inplace=True)
 
@@ -174,11 +183,13 @@ def dim_staff(df_staff,df_department):
            "location",
            "email_address"
     ]]  
-    print(df)
+    # print(df)
     return df
 
-def dim_counterparty(df_counterparty,df_address): 
-    df = pd.merge(df_counterparty, df_address, left_on='legal_address_id', right_on='address_id', how='left')
+def dim_counterparty(df_counterparty_old,df_address_old):
+    df_counterparty=deepcopy(df_counterparty_old)   
+    df_address=deepcopy(df_address_old) 
+    df = pd.merge(df_counterparty, df_address, left_on='legal_address_id', right_on='address_id', how='left')    
    
     df.drop(columns=['created_at_y', 'last_updated_y','created_at_x', 'last_updated_x',
                      'address_id','commercial_contact','delivery_contact', 'legal_address_id'], inplace=True)
@@ -191,17 +202,44 @@ def dim_counterparty(df_counterparty,df_address):
                        'country':'counterparty_legal_country',
                        'phone':'counterparty_legal_phone_number'
                        }, inplace=True) 
+    
+    # print(df)
+    return df
 
+def dim_date(start='2020-01-01', end='2025-12-31'):   
+    df = pd.DataFrame({"date_id": pd.date_range(start, end)})
+    df["year"] = df.date_id.dt.year
+    df["month"] = df.date_id.dt.month
+    df["day"] = df.date_id.dt.day
+    df["day_of_week"] = df.date_id.dt.day_of_week
+    df["day_name"] = df.date_id.dt.day_name()
+    df["month_name"] = df.date_id.dt.month_name()
+    df["quarter"] = df.date_id.dt.quarter
+    return df
 
-    print(df)
+def dim_payment_type(df_old):
+    df=deepcopy(df_old)        
+    df.sort_values(by="payment_type_id", inplace=True)
+    df.reset_index(inplace=True)
+    df.drop(columns=['created_at', 'last_updated', 'index'], inplace=True)
+    # pprint(df)
+    return df
+
+def dim_transaction(df_old):
+    df=deepcopy(df_old)        
+    df.sort_values(by="transaction_id", inplace=True)
+    df.reset_index(inplace=True)
+    df.drop(columns=['created_at', 'last_updated', 'index'], inplace=True)
+    # pprint(df)
     return df
 
 
 
 
-(data_list, table_names) = pull_latest_json_from_data_bucket()
-df_old=format_list_to_dict_of_dataframes(data_list, table_names)
-dim_counterparty(df_old["counterparty"], df_old["address"])
+
+
+
+
 
 
 
