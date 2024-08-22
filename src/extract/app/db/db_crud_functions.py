@@ -1,5 +1,5 @@
 """ initial crud operations for the database """
-
+import logging
 from typing import Optional, Union, Dict, List
 from pg8000.native import Connection, identifier
 from .connection import CreateConnection
@@ -15,10 +15,14 @@ def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
     Returns:
         List: a list of rows from the database or None if no rows are returned
     """
-    if not isinstance(conn, Connection):
-        with CreateConnection() as new_conn:
-            return new_conn.run(sql)
-    return conn.run(sql)
+    try:
+        if not isinstance(conn, Connection):
+            with CreateConnection() as new_conn:
+                return new_conn.run(sql)
+        return conn.run(sql)
+    except Exception as e:
+        logging.error(f"Error querying database with query {sql}: {e}")
+        raise e
 
 
 def fetch_table(table_name: str, conn: Optional[Connection] = None) -> Union[Dict, bool]:
@@ -59,10 +63,7 @@ def fetch_table_names(conn: Optional[Connection] = None) -> Union[List, bool]:
     """fetches all public table names from database"""
 
     sql = """
-        SELECT
-            table_name
-        FROM
-            information_schema.tables
+        SELECT table_name FROM information_schema.tables
         WHERE table_schema='public' AND table_name ~ '^[a-z]'
     """
 
@@ -78,7 +79,7 @@ def fetch_all_tables(updates = False) -> Union[List, bool]:
             fetcher=fetch_updated_rows if updates else fetch_table
             return [row for name in fetch_table_names(conn) if (row:= fetcher(name, conn))]
         except TypeError as e:
-            print(str(e))
+            logging.error(f"Error fetching tables: {e}")
             raise
 
 if __name__ == "__main__":

@@ -20,11 +20,13 @@ def get_bucket_name(bucket_prefix: str) -> str:
         bucket_list = s3.buckets.all()
 
         if not list(bucket_list):
+            logger.error('No buckets found in S3')
             raise ValueError('No buckets found in S3')
 
         for bucket in bucket_list:
             if bucket.name.startswith(bucket_prefix):
                 return bucket.name
+        logger.error(f'No bucket found with prefix: {bucket_prefix}')
         raise ValueError(f'No bucket found with prefix: {bucket_prefix}')
 
     except ClientError as err:
