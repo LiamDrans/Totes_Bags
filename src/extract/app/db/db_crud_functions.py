@@ -6,7 +6,7 @@ from .connection import CreateConnection
 from ..utils.helpers import format_response
 
 
-def query_db(sql: str, conn: Optional[Connection] = None) -> Union[List, None]:
+def query_db(sql: str, keys:dict, conn: Optional[Connection] = None) -> Union[List, None]:
     """Query the database and return the result as a list, or None if no rows are returned.
     Args:
         sql (str): query string
@@ -30,16 +30,22 @@ def fetch_table(table_name: str, conn: Optional[Connection] = None) -> Union[Dic
     Returns:
         Dict: table data formatted into a dictionary or False if no data is returned
     """
-    if rows := query_db(f"SELECT * FROM {identifier(table_name)};", conn):
+    if rows := query_db(f"SELECT * FROM {identifier(table_name)};", {}, conn):
         return format_response(conn.columns, rows, label=table_name)
     return False
 
 
-def fetch_updated_rows(table_name: str, conn: Optional[Connection] = None) -> Union[Dict, bool]:
+def fetch_updated_rows(
+    table_name: str,
+    last_time_checked: str,
+    conn: Optional[Connection] = None
+) -> Union[Dict, bool]:
     """fetches rows from the table that have been updated in the last 30 minutes
     Args:
         table_name (str): name of the table to query
         conn (Connection): the database connection
+        last_time_checked (str): The timestamp of the last time the function was called,
+        formatted as 'YYYY-MM-DD HH:MI:SS'.
 
     Returns:
         Dict: table data formatted into a dictionary or False if no data is returned
@@ -47,10 +53,11 @@ def fetch_updated_rows(table_name: str, conn: Optional[Connection] = None) -> Un
 
     sql = f"""
         SELECT * FROM {identifier(table_name)}
-        WHERE last_updated >= NOW() - interval '30 minutes';
+        WHERE last_updated >= :last_time_checked
+        ORDER BY last_updated DESC;
     """
 
-    if rows:= query_db(sql, conn):
+    if rows:= query_db(sql, {"last_time_checked": last_time_checked}, conn):
         return format_response(conn.columns, rows, label=table_name)
     return False
 
@@ -75,7 +82,7 @@ def fetch_all_tables(updates = False) -> Union[List, bool]:
     """fetches data from all the tables"""
     with CreateConnection() as conn:
         try:
-            fetcher=fetch_updated_rows if updates else fetch_table
+            fetcher=fetch_table #fetch_updated_rows if updates else fetch_table
             return [row for name in fetch_table_names(conn) if (row:= fetcher(name, conn))]
         except TypeError as e:
             print(str(e))
@@ -83,3 +90,4 @@ def fetch_all_tables(updates = False) -> Union[List, bool]:
 
 if __name__ == "__main__":
     print(fetch_all_tables())
+    # print(fetch_updated_rows("sales_order", "2024-08-20 10:20:52.186"))
