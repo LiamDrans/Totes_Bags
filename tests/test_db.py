@@ -36,6 +36,9 @@ def test_query_db_returns_all_data_with_appropriate_query(MockConnection, postgr
     assert MockConnection.called
     assert result == [[1, 1, 'test data']]
 
+def test_query_db_raises_error_with_invalid_sql():
+    with raises(Exception) as excinfo:
+        query_db('SELEC * FROM test LIMIT 1;')
 
 @mark.describe('testing fetch_one_table')
 def test_fetch_one_table_returns_only_one_table(postgresql):
