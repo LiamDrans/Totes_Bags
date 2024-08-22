@@ -31,6 +31,17 @@ data "aws_iam_policy_document" "s3_document" {
     }
 }
 
+data "aws_iam_policy_document" "cloudwatch_logs_policy_document" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+}
+
 data "aws_iam_policy_document" "secrets_manager_document" {
     statement {
 
@@ -40,17 +51,6 @@ data "aws_iam_policy_document" "secrets_manager_document" {
     resources = [
         "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:totesys_db-*",
     ]
-  }
-}
-
-data "aws_iam_policy_document" "cloudwatch_logs_policy_document" {
-  statement {
-    actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
-    ]
-    resources = ["arn:aws:logs:*:*:*"]
   }
 }
 
@@ -71,14 +71,11 @@ data "aws_iam_policy_document" "cw_document" {
     resources = [
       "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:*:*"
     ]
-    # resources = ["arn:aws:logs:*:*:*"]
   }
 }
 
-resource "aws_iam_policy" "cloudwatch_logs_policy" {
-  name_prefix = "cloudwatch-logs-policy-totes-lambda-"
-  policy      = data.aws_iam_policy_document.cloudwatch_logs_policy_document.json
-}
+
+
 
 resource "aws_iam_policy" "s3_policy" {
     name_prefix = "s3-policy-totes-lambda-"
@@ -100,14 +97,18 @@ resource "aws_iam_policy" "cw_policy" {
   policy      = data.aws_iam_policy_document.cw_document.json
 }
 
+
+
+
+
 resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
     role       = aws_iam_role.lambda_role.name
     policy_arn = aws_iam_policy.s3_policy.arn
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_cloudwatch_logs_policy_attachment" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = aws_iam_policy.cloudwatch_logs_policy.arn
+resource "aws_iam_role_policy_attachment" "lambda_secrets_manager_policy_attachment" {
+    role       = aws_iam_role.lambda_role.name
+    policy_arn = aws_iam_policy.secrets_manager_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_cloudwatch_logs_policy_attachment" {
