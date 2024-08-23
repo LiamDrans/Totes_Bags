@@ -110,7 +110,7 @@ def fact_sales_order(df_old):
              ]]
 
     # pprint(df)
-    return
+    return df
 
 def change_date_format(input_date):
     result=datetime.strptime(input_date, "%a, %d %b %Y").strftime("%Y-%m-%d")
