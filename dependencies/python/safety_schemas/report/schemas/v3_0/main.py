@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 # from pydantic import BaseModel, Field, root_validator
 from typing_extensions import Annotated, Literal
@@ -10,7 +10,7 @@ from typing_extensions import Annotated, Literal
 try:
     from pydantic import Field, model_validator  # type: ignore # pragma: no cover
     from pydantic import BaseModel  # type: ignore # pragma: no cover
-    MODEL_VALIDATOR_KWARGS = {"mode": "before"}
+    MODEL_VALIDATOR_KWARGS = {"mode": "after"}
     LATEST_PYDANTIC = True
 except ImportError:
     from pydantic import Field, root_validator as model_validator  # type: ignore # noqa F401 # pragma: no cover
@@ -39,12 +39,13 @@ class SchemaModelV30(BaseModel):
             return self.model_dump_json(**kwargs)
         
         return super().json(**kwargs)
-    
-    def parse_obj(self, *args, **kwargs) -> "SchemaModelV30":
-        if LATEST_PYDANTIC:
-            return self.model_validate(*args, **kwargs)
         
-        return super().parse_obj(*args, **kwargs)
+    @classmethod
+    def parse_obj(cls: "SchemaModelV30", obj: Any) -> "SchemaModelV30":
+        if LATEST_PYDANTIC:
+            return cls.model_validate(obj)
+        
+        return super(SchemaModelV30, cls).parse_obj(obj)
 
 
 class Telemetry(SchemaModelV30):
@@ -374,14 +375,14 @@ class Report(SchemaModelV30):
     scan_results: Annotated[ScanResults, Field(..., title="Scan Results")]
 
     @model_validator(**MODEL_VALIDATOR_KWARGS)
-    def validate_projects(cls, values):
+    def validate_projects(cls, report):
         try:
-            scan_type = values["meta"].scan_type
+            scan_type = report.meta.scan_type
         except Exception:
             raise ValueError("Unable to parsing meta from the file report.")
 
         try:
-            projects = values.get("scan_results", {}).projects
+            projects = report.scan_results.projects
         except Exception:
             raise ValueError("Unable to parsing projects from the file report.")
 
@@ -399,4 +400,4 @@ class Report(SchemaModelV30):
                 "should be used in results.projects."
             )
 
-        return values
+        return report
