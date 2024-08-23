@@ -5,6 +5,7 @@ from utils.get_bucket_names import get_data_bucket_name
 import io
 import json
 from copy import deepcopy
+from datetime import datetime
 
 def pull_latest_json_from_data_bucket():    
     # bucket_name = get_data_bucket_name()
@@ -39,15 +40,17 @@ def dim_design(df_old):
 def fact_payment(df_old):
     df=deepcopy(df_old) 
     #splitting date time columns    
-    df['created_date']=df['created_at'].str.slice(stop=16)
+    df['created_date_1']=df['created_at'].str.slice(stop=16)    
+    df['created_date'] = df['created_date_1'].apply(lambda x: change_date_format(x))  
     df['created_time']=df['created_at'].str.slice(start=17)
-    df['last_updated_date']=df['last_updated'].str.slice(stop=16)
+    df['last_updated_date_1']=df['last_updated'].str.slice(stop=16)
+    df['last_updated_date'] = df['last_updated_date_1'].apply(lambda x: change_date_format(x)) 
     df['last_updated_time']=df['last_updated'].str.slice(start=17)
 
     #sort and drop columns
     df.sort_values(by="payment_id", inplace=True)
     df.reset_index(inplace=True)
-    df.drop(columns=['created_at', 'last_updated','index','company_ac_number','counterparty_ac_number'], inplace=True)
+    df.drop(columns=['created_at', 'last_updated','index','company_ac_number','counterparty_ac_number','created_date_1', 'created_date_1'], inplace=True)
     df.index.name='payment_record_id'
     df.reset_index(inplace=True)
 
@@ -73,16 +76,18 @@ def fact_payment(df_old):
 def fact_sales_order(df_old):
     df=deepcopy(df_old) 
     #splitting date time columns    
-    df['created_date']=df['created_at'].str.slice(stop=16)
+    df['created_date_1']=df['created_at'].str.slice(stop=16)    
+    df['created_date'] = df['created_date_1'].apply(lambda x: change_date_format(x))  
     df['created_time']=df['created_at'].str.slice(start=17)
-    df['last_updated_date']=df['last_updated'].str.slice(stop=16)
+    df['last_updated_date_1']=df['last_updated'].str.slice(stop=16)
+    df['last_updated_date'] = df['last_updated_date_1'].apply(lambda x: change_date_format(x)) 
     df['last_updated_time']=df['last_updated'].str.slice(start=17)
 
     #sort and drop columns
     df.sort_values(by="sales_order_id", inplace=True)
     df.reset_index(inplace=True)
     df.rename(columns={'staff_id':'sales_staff_id'},inplace=True)
-    df.drop(columns=['created_at', 'last_updated','index'], inplace=True)
+    df.drop(columns=['created_at', 'last_updated','index','created_date_1', 'created_date_1'], inplace=True)
     df.index.name='sales_record_id'
     df.reset_index(inplace=True)
 
@@ -107,19 +112,24 @@ def fact_sales_order(df_old):
     # pprint(df)
     return
 
+def change_date_format(input_date):
+    result=datetime.strptime(input_date, "%a, %d %b %Y").strftime("%Y-%m-%d")
+    return result
 
 def fact_purchase_order(df_old):
     df=deepcopy(df_old) 
     #splitting date time columns    
-    df['created_date']=df['created_at'].str.slice(stop=16)
+    df['created_date_1']=df['created_at'].str.slice(stop=16)    
+    df['created_date'] = df['created_date_1'].apply(lambda x: change_date_format(x))  
     df['created_time']=df['created_at'].str.slice(start=17)
-    df['last_updated_date']=df['last_updated'].str.slice(stop=16)
+    df['last_updated_date_1']=df['last_updated'].str.slice(stop=16)
+    df['last_updated_date'] = df['last_updated_date_1'].apply(lambda x: change_date_format(x)) 
     df['last_updated_time']=df['last_updated'].str.slice(start=17)
 
     #sort and drop columns
     df.sort_values(by="purchase_order_id", inplace=True)
     df.reset_index(inplace=True)
-    df.drop(columns=['created_at', 'last_updated','index'], inplace=True)
+    df.drop(columns=['created_at', 'last_updated','index', 'created_date_1', 'created_date_1'], inplace=True)
     df.index.name='purchase_record_id'
     df.reset_index(inplace=True)
 
@@ -140,6 +150,7 @@ def fact_purchase_order(df_old):
              'agreed_payment_date',
              'agreed_delivery_location_id'
              ]]
+    
 
     # print(df)
     return df
