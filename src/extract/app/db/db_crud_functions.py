@@ -1,8 +1,7 @@
 """ initial crud operations for the database """
 
-from datetime import datetime, timedelta
 from typing import Optional, Union, Dict, List, Tuple
-from pg8000.native import Connection, Error, identifier, TIMESTAMP
+from pg8000.native import Connection, Error, identifier
 from .connection import CreateConnection
 from ..utils.helpers import format_response
 
@@ -46,18 +45,18 @@ def fetch_table_rows(
     Returns:
         Dict: table data formatted into a dictionary or False if no data is returned
     """
+    sql = f"SELECT * FROM {identifier(table_name)};"
+    placeholders = {}
 
-    sql = f"""
-        SELECT *
-        FROM {identifier(table_name)}
-        WHERE :last_time_queried is NULL OR last_updated >= :last_time_queried;
-    """
+    if last_time_queried:
+        sql = f"""
+            SELECT *
+            FROM {identifier(table_name)}
+            WHERE last_updated >= :last_time_queried;
+        """
+        placeholders = {'last_time_queried': last_time_queried}
 
-    placeholders = {'last_time_queried': last_time_queried}
-    # cast the last_time_queried to a timestamp, necessary for NULL comparison
-    types = {'last_time_queried': TIMESTAMP}
-
-    if rows := query_db(sql, placeholders=placeholders, conn=conn, types=types):
+    if rows := query_db(sql, placeholders=placeholders, conn=conn):
         return format_response(conn.columns, rows, label=table_name)
 
     return False
@@ -89,7 +88,7 @@ def fetch_all_tables(last_time_queried: Optional[str] = None) -> Tuple[str, List
     with CreateConnection() as conn:
         try:
             return (
-                query_db('SELECT NOW()', conn=conn)[0][0],
+                query_db('SELECT NOW()', conn=conn)[0][0].isoformat(),
                 [
                     row for name in fetch_table_names(conn)
                     if (row:= fetch_table_rows(
@@ -102,7 +101,3 @@ def fetch_all_tables(last_time_queried: Optional[str] = None) -> Tuple[str, List
         except Error as err:
             print(str(err))
             raise
-
-
-if __name__ == "__main__":
-    print(fetch_all_tables((datetime.now() - timedelta(hours=6)).isoformat()))

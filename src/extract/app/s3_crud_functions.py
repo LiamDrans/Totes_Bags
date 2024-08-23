@@ -2,7 +2,7 @@
 import logging
 from typing import Union, Dict
 import boto3
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, ParamValidationError
 
 # Set up our logger
 logging.basicConfig(level=logging.INFO)
@@ -27,22 +27,6 @@ def get_bucket_name(bucket_prefix: str) -> str:
                 return bucket.name
         raise ValueError(f'No bucket found with prefix: {bucket_prefix}')
 
-    except ClientError as err:
-        logger.error(err)
-        raise err
-
-
-def get_bucket_file_count(bucket_name: str) -> int:
-    """get file count for bucket
-    Args:
-        bucket_name (str): bucket to count files in.
-    Returns:
-        int: file count
-    """
-    try:
-        s3 = boto3.client('s3')
-        response = s3.list_objects_v2(Bucket=bucket_name)
-        return len(response.get('Contents', []))
     except ClientError as err:
         logger.error(err)
         raise err
@@ -74,11 +58,6 @@ def upload_to_bucket(obj: Dict) -> None:
     try:
         s3_client = boto3.client('s3')
         s3_client.put_object(**obj)
-    except ClientError as err:
+    except (ClientError, ParamValidationError) as err:
         logger.error(err)
         raise err
-
-
-if __name__ == '__main__':
-    totes_bucket = get_bucket_name('totes-data-')
-    print(get_object_head(totes_bucket, 'latest_db_totes.json'))
