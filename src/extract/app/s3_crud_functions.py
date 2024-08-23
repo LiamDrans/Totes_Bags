@@ -1,6 +1,6 @@
 '''Crud functions for S3 bucket operations'''
 import logging
-from typing import Dict
+from typing import Union, Dict
 import boto3
 from botocore.exceptions import ClientError
 
@@ -48,24 +48,21 @@ def get_bucket_file_count(bucket_name: str) -> int:
         raise err
 
 
-def bucket_has_file(bucket_name: str, file_name: str) -> bool:
-    """check if file in bucket exists
+def get_object_head(bucket_name: str, file_name: str) -> Union[Dict, bool]:
+    """If file exists, returns the head object metadata
     Args:
         bucket_name (str): bucket to check
         file_name (str): file to check for
     Returns:
-        bool: True if file exists, False otherwise
+        Dict: head object metadata
+        bool: False if file does not exist
     """
     try:
         s3_client = boto3.client('s3')
-        s3_client.get_object(Bucket=bucket_name, Key=file_name)
-        return True
-    except s3_client.exceptions.NoSuchKey:
-        return False
-
+        return s3_client.head_object(Bucket=bucket_name, Key=file_name)
     except ClientError as err:
         logger.error(err)
-        raise err
+        return False
 
 
 def upload_to_bucket(obj: Dict) -> None:
@@ -83,6 +80,5 @@ def upload_to_bucket(obj: Dict) -> None:
 
 
 if __name__ == '__main__':
-    # totes_bucket = get_bucket_name('totes-data-')
-    print(get_bucket_file_count('nonsense_name'))
-    # print(bucket_has_file(totes_bucket, 'latest_db_totes.json'))
+    totes_bucket = get_bucket_name('totes-data-')
+    print(get_object_head(totes_bucket, 'latest_db_totes.json'))
