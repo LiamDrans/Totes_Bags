@@ -109,8 +109,7 @@ def fact_sales_order(df_old):
              'agreed_delivery_location_id'
              ]]
 
-    # pprint(df)
-    return
+    return df
 
 def change_date_format(input_date):
     result=datetime.strptime(input_date, "%a, %d %b %Y").strftime("%Y-%m-%d")
@@ -118,7 +117,7 @@ def change_date_format(input_date):
 
 def fact_purchase_order(df_old):
     df=deepcopy(df_old) 
-    #splitting date time columns    
+    # splitting date time columns
     df['created_date_1']=df['created_at'].str.slice(stop=16)    
     df['created_date'] = df['created_date_1'].apply(lambda x: change_date_format(x))  
     df['created_time']=df['created_at'].str.slice(start=17)
