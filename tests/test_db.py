@@ -5,7 +5,7 @@ from pg8000.native import Connection
 from pytest import mark, raises
 from src.extract.app.db.db_crud_functions import (
     query_db,
-    fetch_table,
+    fetch_table_rows,
     fetch_table_names,
     fetch_all_tables
 )
@@ -54,7 +54,7 @@ def test_fetch_one_table_returns_only_one_table(postgresql):
     )
 
     with database_connection as conn:
-        result = fetch_table('test', conn)
+        result = fetch_table_rows('test', conn=conn)
         assert result == {'test': [{'id': 1, 'num': 1, 'data': 'test data'}]}
 
 @mark.describe('testing fetch_table_names')
@@ -98,9 +98,9 @@ def test_fetch_all_tables(MockConnection, postgresql):
         port=postgresql.pgconn.port
     )
 
-    result = fetch_all_tables()
-    assert result[0] == {'test': [{'id': 1, 'num': 1, 'data': 'test data'}]}
-    assert result[1] == {'test2': [{'id': 1, 'num': 2, 'data': 'test data2'}]}
+    _, tables = fetch_all_tables()
+    assert tables[0] == {'test': [{'id': 1, 'num': 1, 'data': 'test data'}]}
+    assert tables[1] == {'test2': [{'id': 1, 'num': 2, 'data': 'test data2'}]}
 
 @mark.it('testing fetch_all_tables_raises_error')
 @patch('src.extract.app.db.db_crud_functions.CreateConnection')
