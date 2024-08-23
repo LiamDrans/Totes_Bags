@@ -1,8 +1,6 @@
 import boto3
 import pandas as pd
-from pprint import pprint
 from .utils.get_bucket_names import get_data_bucket_name
-import io
 import json
 from copy import deepcopy
 from datetime import datetime
