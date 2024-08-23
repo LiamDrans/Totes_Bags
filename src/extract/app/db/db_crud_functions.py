@@ -40,6 +40,8 @@ def fetch_table_rows(
         table_name (str): name of the table to query
         last_time_queried (str): optional time to query from
         conn (Connection): the database connection
+        last_time_checked (str): The timestamp of the last time the function was called,
+        formatted as 'YYYY-MM-DD HH:MI:SS'.
 
     Returns:
         Dict: table data formatted into a dictionary or False if no data is returned
