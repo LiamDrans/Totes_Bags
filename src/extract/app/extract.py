@@ -14,7 +14,9 @@ def lambda_handler(event, context) -> None:
 
     # get the last time the database was queried from file's metadata
     if latest_db_totes_meta:= get_object_head(bucket_name, 'latest_db_totes.json'):
-        last_time_queried = latest_db_totes_meta['Metadata']['last_time_queried']
+        meta_data = latest_db_totes_meta['Metadata']
+        if 'last_time_queried' in meta_data:
+            last_time_queried = meta_data['last_time_queried']
 
     # fetch all rows from tables from the last time queried
     latest_time_queried, tables = fetch_all_tables(last_time_queried)

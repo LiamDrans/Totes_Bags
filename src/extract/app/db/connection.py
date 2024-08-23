@@ -1,4 +1,5 @@
 """context manager connection class for totesys database"""
+import logging
 from pg8000.native import Connection, Error
 from .db_credentials import get_db_credentials
 
@@ -21,8 +22,9 @@ class CreateConnection:
                 port=secret['PORT']
             )
             return self.connection
-        except Error as e:
-            return str(e)
+        except Error as err:
+            logging.error('Error connecting to database totesys_db: %s', err)
+            return str(err)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('closing connection...')

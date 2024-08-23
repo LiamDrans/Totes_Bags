@@ -66,10 +66,7 @@ def fetch_table_names(conn: Optional[Connection] = None) -> Union[List, bool]:
     """fetches all public table names from database"""
 
     sql = """
-        SELECT
-            table_name
-        FROM
-            information_schema.tables
+        SELECT table_name FROM information_schema.tables
         WHERE table_schema='public' AND table_name ~ '^[a-z]'
     """
 
