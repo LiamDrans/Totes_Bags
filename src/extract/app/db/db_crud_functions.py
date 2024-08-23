@@ -89,7 +89,7 @@ def fetch_all_tables(last_time_queried: Optional[str] = None) -> Tuple[str, List
     with CreateConnection() as conn:
         try:
             return (
-                datetime.now().isoformat(),
+                query_db('SELECT NOW()', conn=conn)[0][0],
                 [
                     row for name in fetch_table_names(conn)
                     if (row:= fetch_table_rows(
