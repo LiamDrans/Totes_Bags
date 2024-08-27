@@ -29,15 +29,17 @@ resource "aws_lambda_function" "task_extract" {
     handler          = "app.extract.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
-    layers           = [aws_lambda_layer_version.dependencies.arn]
+    # layers           = [aws_lambda_layer_version.dependencies.arn]
     memory_size = 256
+    package_type = "Image"
+    image_uri = "${aws_ecr_repository.lambda_repo.repository_url}:latest"
     environment {
       variables = {
         TZ="Europe/London"
     }
     }
 
-    depends_on = [aws_s3_object.lambda_code, aws_lambda_layer_version.dependencies]
+    depends_on = [aws_s3_object.lambda_code, null_resource.docker_build_push]
 }
 
 resource "aws_lambda_function" "task_transform" {
@@ -49,8 +51,11 @@ resource "aws_lambda_function" "task_transform" {
     handler          = "${var.transform_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
+    memory_size = 256
+    package_type = "Image"
+    image_uri = "${aws_ecr_repository.lambda_repo.repository_url}:latest"
 
-    depends_on = [aws_s3_object.lambda_code]
+    depends_on = [aws_s3_object.lambda_code, null_resource.docker_build_push]
 }
 
 resource "aws_lambda_function" "task_load" {

@@ -6,6 +6,9 @@ DIRECTORY="$(pwd)"
 # Change it as per your requirement
 LAYER_NAME="layer"
 
+#Get super user permission
+sudo su
+
 # Build the Docker image
 docker build -t lambda-layer "$DIRECTORY"
 
