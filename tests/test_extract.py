@@ -31,8 +31,8 @@ def test_lambda_handler_upload(MockConnection, postgresql):
     s3.create_bucket(Bucket='totes-data-1234124')
     lambda_handler(event=True,context=True)
     response = s3.list_objects(Bucket='totes-data-1234124')
-    result = s3.get_object(Bucket='totes-data-1234124', Key='full_db_totes.json')
-    assert response['Contents'][1]['Key'] == 'full_db_totes.json'
+    result = s3.get_object(Bucket='totes-data-1234124', Key='latest_db_totes.json')
+    assert response['Contents'][1]['Key'] == 'latest_db_totes.json'
     assert json.load(result["Body"]) == [
         {'test': [{'id': 1, 'num': 1, 'last_updated': 'Thu, 03 Nov 2022 14:20:49 GMT'}]},
         {'test2': [{'id': 1, 'num': 2, 'last_updated': 'Thu, 03 Nov 2022 14:20:49 GMT'}]}
@@ -68,7 +68,10 @@ def test_lambda_handler_update(MockConnection, postgresql):
     s3.put_object(
         Body= json_encode(test_data),
         Bucket='totes-data-1234124',
-        Key='full_db_totes.json'
+        Key='latest_db_totes.json',
+        Metadata={
+            'last_time_queried': 'Thu, 03 Nov 2023 14:20:49 GMT'
+        }
     )
 
     cur = postgresql.cursor()
@@ -78,11 +81,10 @@ def test_lambda_handler_update(MockConnection, postgresql):
 
     lambda_handler(event=True,context=True)
     response = s3.list_objects(Bucket='totes-data-1234124')
+    assert response['Contents'][1]['Key'] == 'latest_db_totes.json'
 
-    assert response['Contents'][2]['Key'] == 'latest_db_totes.json'
     result = s3.get_object(Bucket='totes-data-1234124', Key='latest_db_totes.json')
     body = json.load(result['Body'])
-
     assert body[0]['test'][0]['id'] == 2
     assert body[0]['test'][0]['num'] == 2
 
@@ -116,7 +118,10 @@ def test_lambda_handler_no_update(MockConnection, postgresql):
     s3.put_object(
         Body= json_encode(test_data),
         Bucket='totes-data-1234124',
-        Key='full_db_totes.json'
+        Key='latest_db_totes.json',
+        Metadata={
+            'last_time_queried': 'Thu, 03 Nov 2023 14:20:49 GMT'
+        }
     )
 
     assert not lambda_handler(event=True,context=True)
