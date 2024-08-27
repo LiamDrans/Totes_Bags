@@ -1,6 +1,6 @@
 import boto3
 import pandas as pd
-from .utils.get_bucket_names import get_data_bucket_name
+from utils.get_bucket_names import get_data_bucket_name, get_processed_bucket_name
 import json
 from copy import deepcopy
 from datetime import datetime
@@ -272,3 +272,7 @@ def transform_all_tables(df_old):
     if "staff" in df_old and "department" in df_old:
         df_new["dim_staff"] = dim_staff(df_old["staff"], df_old["department"])
     return df_new
+
+def prepend_time():
+    """prepends current time to given string"""
+    return datetime.now().strftime("%Y/%B/%d/%H:%M/")
