@@ -1,4 +1,4 @@
-from totes_star_schema import format_list_to_dict_of_dataframes, pull_latest_json_from_data_bucket, \
+from .totes_star_schema import format_list_to_dict_of_dataframes, pull_latest_json_from_data_bucket, \
      transform_all_tables, get_processed_bucket_name, prepend_time
 
 
