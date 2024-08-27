@@ -31,5 +31,13 @@ def test_get_bucket_name_without_prefix_returns_appropriate_error():
     except ValueError as e:
         assert str(e) == "No bucket found with prefix: totes-data-"
 
+@mock_aws
+def test_get_processed_bucket_name_returns_appropriate_bucket():
+    s3 = boto3.client('s3')
+    s3.create_bucket(Bucket='totes-processed-data-1234124', CreateBucketConfiguration={
+        'LocationConstraint': 'eu-west-2'})
+    response = get_processed_bucket_name()
+    assert response == 'totes-processed-data-1234124'
+
 if __name__ == '__main__':
     unittest.main()
