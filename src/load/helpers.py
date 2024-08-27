@@ -79,7 +79,7 @@ def insert_data_into_db(connection, content, schema, table_name):
         data = content.splitlines()
         for row in data:
             values = row.split(',')
-            cursor.executemany(insert_query, values)
+            cursor.execute(insert_query, values)
         
         connection.commit()
         logger.info(f"Data successfully inserted into table {table_name}")
