@@ -176,3 +176,8 @@ terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
 
 
+#lock file and dependencies
+
+poetry.lock
+requirements.txt
+/dependencies/
