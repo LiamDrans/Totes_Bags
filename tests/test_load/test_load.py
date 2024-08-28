@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock
 from moto import mock_aws
 import boto3
 import pytest
-from src.load.load import lambda_handler
+from src.load.app.load import lambda_handler
 
 SAMPLE_SECRET = {
     "cohort_id": "test",
@@ -68,9 +68,9 @@ def test_lambda_handler(mock_connect, s3_and_secrets):
         assert response["statusCode"] == 200
         mock_connection.cursor().execute.assert_called()
 
-@patch('src.load.load.process_gzip_file')
-@patch('src.load.load.connect_to_db')
-@patch('src.load.load.get_secret')
+@patch('src.load.app.helpers.process_gzip_file')
+@patch('src.load.app.helpers.connect_to_db')
+@patch('src.load.app.helpers.get_secret')
 def test_lambda_handler_with_get_secret_error(
     mock_get_secret, mock_connect_to_db, mock_process_gzip_file, s3_and_secrets
     ):
@@ -81,9 +81,9 @@ def test_lambda_handler_with_get_secret_error(
     with pytest.raises(Exception):
         lambda_handler(SAMPLE_EVENT, None)
 
-@patch('src.load.load.process_gzip_file')
-@patch('src.load.load.connect_to_db')
-@patch('src.load.load.get_secret')
+@patch('src.load.app.helpers.process_gzip_file')
+@patch('src.load.app.helpers.connect_to_db')
+@patch('src.load.app.helpers.get_secret')
 def test_lambda_handler_with_db_connection_error(
     mock_get_secret, mock_connect_to_db, mock_process_gzip_file, s3_and_secrets
     ):
@@ -95,9 +95,9 @@ def test_lambda_handler_with_db_connection_error(
     with pytest.raises(Exception):
         lambda_handler(SAMPLE_EVENT, None)
 
-@patch('src.load.load.process_gzip_file')
-@patch('src.load.load.connect_to_db')
-@patch('src.load.load.get_secret')
+@patch('src.load.app.helpers.process_gzip_file')
+@patch('src.load.app.helpers.connect_to_db')
+@patch('src.load.app.helpers.get_secret')
 def test_lambda_handler_with_process_gzip_file_error(
     mock_get_secret, mock_connect_to_db, mock_process_gzip_file, s3_and_secrets
     ):
