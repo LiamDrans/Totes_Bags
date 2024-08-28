@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     to our data warehouse, connects to a processed s3 bucket, and uploads
     the processed data"""
 
-    logger.info("Lambda function started")
+    print("Loading task started")
 
     try:
         secret = get_secret("DataWarehouse")
