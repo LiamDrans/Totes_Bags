@@ -30,7 +30,11 @@ resource "aws_lambda_function" "task_extract" {
     runtime          = "python3.12"
     timeout          = var.default_timeout
     layers           = ["${aws_lambda_layer_version.dependencies.arn}"]
-    memory_size = 256    
+    memory_size      = 256
+    logging_config {
+        log_format   = "Text"
+        log_group    = aws_cloudwatch_log_group.logs.name
+    }
     environment {
       variables = {
         TZ="Europe/London"
@@ -50,7 +54,12 @@ resource "aws_lambda_function" "task_transform" {
     runtime          = "python3.12"
     timeout          = var.default_timeout
     layers           = ["arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python312:13"]
-    memory_size = 256    
+    memory_size = 256
+    logging_config {
+        log_format   = "Text"
+        log_group    = aws_cloudwatch_log_group.logs.name
+    }
+
     depends_on = [aws_s3_object.lambda_code]
      environment {
       variables = {
@@ -68,8 +77,12 @@ resource "aws_lambda_function" "task_load" {
     handler          = "${var.load_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
-    memory_size = 256    
+    memory_size = 256
     layers         = ["${aws_lambda_layer_version.dependencies.arn}"]
+    logging_config {
+        log_format   = "Text"
+        log_group    = aws_cloudwatch_log_group.logs.name
+    }
     environment {
         variables = {
         BUCKET_NAME = aws_s3_bucket.data_ingestion.id
