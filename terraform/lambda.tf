@@ -59,7 +59,7 @@ resource "aws_lambda_function" "task_load" {
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.load_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
-    handler          = "${var.load_lambda}.lambda_handler"
+    handler          = "app.load.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
     environment {

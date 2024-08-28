@@ -7,7 +7,7 @@ import pytest
 from pytest import mark
 import boto3
 from moto import mock_aws
-from src.load.helpers import get_secret, connect_to_db, process_gzip_file, determine_table_name
+from load.app.helpers import get_secret, connect_to_db, process_gzip_file, determine_table_name
 
 SAMPLE_SECRET = {
     "cohort_id": "test",
