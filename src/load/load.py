@@ -27,10 +27,21 @@ def lambda_handler(event, context):
         }
 
         connection = connect_to_db(db_credentials)
+        dim_files = []
+        fact_files = []
 
         for record in event['Records']:
             bucket_name = record['s3']['bucket']['name']
             object_key = record['s3']['object']['key']
+            if object_key.startswith('dim_'):
+                dim_files.append((bucket_name, object_key))
+            elif object_key.startswith('fact_'):
+                fact_files.append((bucket_name, object_key))
+
+        for bucket_name, object_key in dim_files:
+            process_gzip_file(connection, bucket_name, object_key, db_credentials)
+
+        for bucket_name, object_key in fact_files:
             process_gzip_file(connection, bucket_name, object_key, db_credentials)
 
         logger.info("All files processed successfully.")

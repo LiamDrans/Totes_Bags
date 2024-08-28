@@ -74,8 +74,26 @@ def insert_data_into_db(connection, content, schema, table_name):
     """Function for inserting to our Data Warehouse"""
     cursor = connection.cursor()
     try:
-        insert_query = f"INSERT INTO {schema}.{table_name} (column1, column2) VALUES (%s, %s)"
-
+        
+        table_insert_queries = {
+            "dim_date": f"INSERT INTO {schema}.dim_date (date_id, year, month, day, day_of_week, day_name, month_name, quarter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+            "dim_staff": f"INSERT INTO {schema}.dim_staff (staff_id, first_name, last_name, department_name, location, email_address) VALUES (%s, %s, %s, %s, %s, %s)",
+            "dim_location": f"INSERT INTO {schema}.dim_location (location_id, address_line_1, address_line_2, district, city, postal_code, country, phone) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+            "dim_currency": f"INSERT INTO {schema}.dim_currency (currency_id, currency_code, currency_name) VALUES (%s, %s, %s)",
+            "dim_design": f"INSERT INTO {schema}.dim_design (design_id, design_name, file_location, file_name) VALUES (%s, %s, %s, %s)",
+            "dim_counterparty": f"INSERT INTO {schema}.dim_counterparty (counterparty_id, counterparty_legal_name, counterparty_legal_address_line_1, counterparty_legal_address_line_2, counterparty_legal_district, counterparty_legal_city, counterparty_legal_country, counterparty_legal_postal_code, counterparty_legal_phone_number) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "dim_payment_type": f"INSERT INTO {schema}.dim_payment_type (payment_type_id, payment_type_name) VALUES (%s, %s)",
+            "dim_transaction": f"INSERT INTO {schema}.dim_transaction (transaction_id, transaction_type, sales_order_id, purchase_order_id) VALUES (%s, %s, %s, %s)",
+            "fact_sales_order": f"INSERT INTO {schema}.fact_sales_order (sales_record_id, created_date, created_time, last_updated_date, last_updated_time, sale_staff_id, counterparty_id, units_sold, unit_price, currency_id, design_id, agreed_payment_date, agreed_delivery_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "fact_purchase_order": f"INSERT INTO {schema}.fact_purchase_order (purchase_record_id, created_date, created_time, last_updated_date, last_updated_time, staff_id, counterparty_id, item_code, item_quantity, item_unit_price, currency_id, agreed_delivery_date, agreed_payment_date, agreed_delivery_location_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "fact_payment": f"INSERT INTO {schema}.fact_payment (payment_record_id, created_date, created_time, last_updated_date, last_updated_time, transaction_id, counterparty_id, payment_amount, currency_id, payment_type_id, paid, payment_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+        }
+         
+        insert_query = table_insert_queries.get(table_name)
+        if not insert_query:
+            logger.warning(f"No insert query found for table {table_name}. Skipping.")
+            return
+        
         data = content.splitlines()
         for row in data:
             values = row.split(',')
