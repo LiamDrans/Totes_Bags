@@ -5,9 +5,9 @@ FROM public.ecr.aws/lambda/python:3.9
 WORKDIR /app
 
 # Install any necessary dependencies
-RUN apt-get update && \
-    apt-get install -y zip && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -y zip 
+RUN rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file to the working directory
 COPY requirements.txt .
