@@ -1,8 +1,8 @@
 '''Crud functions for S3 bucket operations'''
 import logging
-from typing import Dict
+from typing import Union, Dict
 import boto3
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, ParamValidationError
 
 # Set up our logger
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +26,8 @@ def get_bucket_name(bucket_prefix: str) -> str:
         for bucket in bucket_list:
             if bucket.name.startswith(bucket_prefix):
                 return bucket.name
-        logger.error(f'No bucket found with prefix: {bucket_prefix}')
+
+        logger.error('No bucket found with prefix: %s', bucket_prefix)
         raise ValueError(f'No bucket found with prefix: {bucket_prefix}')
 
     except ClientError as err:
@@ -34,40 +35,21 @@ def get_bucket_name(bucket_prefix: str) -> str:
         raise err
 
 
-def get_bucket_file_count(bucket_name: str) -> int:
-    """get file count for bucket
-    Args:
-        bucket_name (str): bucket to count files in.
-    Returns:
-        int: file count
-    """
-    try:
-        s3 = boto3.client('s3')
-        response = s3.list_objects_v2(Bucket=bucket_name)
-        return len(response.get('Contents', []))
-    except ClientError as err:
-        logger.error(err)
-        raise err
-
-
-def bucket_has_file(bucket_name: str, file_name: str) -> bool:
-    """check if file in bucket exists
+def get_object_head(bucket_name: str, file_name: str) -> Union[Dict, bool]:
+    """If file exists, returns the head object metadata
     Args:
         bucket_name (str): bucket to check
         file_name (str): file to check for
     Returns:
-        bool: True if file exists, False otherwise
+        Dict: head object metadata
+        bool: False if file does not exist
     """
     try:
         s3_client = boto3.client('s3')
-        s3_client.get_object(Bucket=bucket_name, Key=file_name)
-        return True
-    except s3_client.exceptions.NoSuchKey:
-        return False
-
+        return s3_client.head_object(Bucket=bucket_name, Key=file_name)
     except ClientError as err:
         logger.error(err)
-        raise err
+        return False
 
 
 def upload_to_bucket(obj: Dict) -> None:
@@ -79,12 +61,6 @@ def upload_to_bucket(obj: Dict) -> None:
     try:
         s3_client = boto3.client('s3')
         s3_client.put_object(**obj)
-    except ClientError as err:
+    except (ClientError, ParamValidationError) as err:
         logger.error(err)
         raise err
-
-
-if __name__ == '__main__':
-    # totes_bucket = get_bucket_name('totes-data-')
-    print(get_bucket_file_count('nonsense_name'))
-    # print(bucket_has_file(totes_bucket, 'latest_db_totes.json'))

@@ -34,9 +34,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-dependencies
-packages/layer
-poetry.lock
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -183,4 +181,4 @@ terraform/terraform.tfstate.backup
 
 poetry.lock
 requirements.txt
-/dependencies/
+dependencies/python/

@@ -22,9 +22,9 @@ class CreateConnection:
                 port=secret['PORT']
             )
             return self.connection
-        except Error as e:
-            logging.error(f'Error connecting to database totesys_db: {e}')
-            return str(e)
+        except Error as err:
+            logging.error('Error connecting to database totesys_db: %s', err)
+            return str(err)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('closing connection...')
