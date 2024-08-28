@@ -33,7 +33,7 @@ resource "aws_lambda_function" "task_extract" {
     memory_size      = 256
     logging_config {
         log_format   = "Text"
-        log_group    = aws_cloudwatch_log_group.logs.arn
+        log_group    = aws_cloudwatch_log_group.logs.name
     }
     environment {
       variables = {
@@ -55,7 +55,7 @@ resource "aws_lambda_function" "task_transform" {
     timeout          = var.default_timeout
     logging_config {
         log_format   = "Text"
-        log_group    = aws_cloudwatch_log_group.logs.arn
+        log_group    = aws_cloudwatch_log_group.logs.name
     }
 
     depends_on = [aws_s3_object.lambda_code]
@@ -72,7 +72,7 @@ resource "aws_lambda_function" "task_load" {
     timeout          = var.default_timeout
         logging_config {
         log_format   = "Text"
-        log_group    = aws_cloudwatch_log_group.logs.arn
+        log_group    = aws_cloudwatch_log_group.logs.name
     }
     environment {
         variables = {
