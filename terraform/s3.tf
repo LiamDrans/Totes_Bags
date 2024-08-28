@@ -114,10 +114,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "data_ingestion_lifecycle" {
     #     }
     # }
 
-# resource "aws_s3_object" "lambda_layer" {
-#   bucket = aws_s3_bucket.code_bucket.bucket
-#   key    = "layer/layer.zip"
-#   source = data.archive_file.layer_code.output_path
-#   source_hash = data.archive_file.layer_code.output_base64sha256
-#   depends_on = [ data.archive_file.layer_code ]
-# }
+resource "aws_s3_object" "lambda_layer" {
+  bucket = aws_s3_bucket.code_bucket.bucket
+  key    = "layer/layer.zip"
+  source = data.archive_file.layer_code.output_path
+  source_hash = data.archive_file.layer_code.output_base64sha256
+  depends_on = [ data.archive_file.layer_code ]
+}
