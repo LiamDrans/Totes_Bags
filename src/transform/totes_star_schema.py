@@ -1,6 +1,6 @@
 import boto3
 import pandas as pd
-from utils.get_bucket_names import get_data_bucket_name, get_processed_bucket_name
+from .utils.get_bucket_names import get_data_bucket_name, get_processed_bucket_name
 import json
 from copy import deepcopy
 from datetime import datetime
