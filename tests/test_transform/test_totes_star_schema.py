@@ -4,7 +4,7 @@ import boto3
 import pandas as pd
 from moto import mock_aws
 
-from src.transform.totes_star_schema import pull_latest_json_from_data_bucket, format_list_to_dict_of_dataframes, \
+from src.transform.app.totes_star_schema import pull_latest_json_from_data_bucket, format_list_to_dict_of_dataframes, \
     dim_design, fact_payment, fact_sales_order, fact_purchase_order, dim_currency, dim_location, dim_transaction, \
     dim_payment_type, dim_counterparty, dim_staff, transform_all_tables
 

@@ -3,7 +3,7 @@ import unittest
 import boto3
 from moto import mock_aws
 
-from src.transform.utils.get_bucket_names import get_data_bucket_name, get_processed_bucket_name
+from src.transform.app.utils.get_bucket_names import get_data_bucket_name, get_processed_bucket_name
 
 
 @mock_aws

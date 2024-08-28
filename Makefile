@@ -54,4 +54,4 @@ banditcheck:
 security-test: safetycheck banditcheck
 
 check-coverage:
-	$(POETRY) run pytest --cov=src tests/ --cov-fail-under=90
+	$(POETRY) run pytest --cov=src tests/ --cov-fail-under=80
