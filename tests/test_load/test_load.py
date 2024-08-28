@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock
 from moto import mock_aws
 import boto3
 import pytest
-from load.app.load import lambda_handler
+from src.load.app.load import lambda_handler
 
 SAMPLE_SECRET = {
     "cohort_id": "test",
