@@ -50,7 +50,7 @@ resource "aws_lambda_function" "task_transform" {
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.transform_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
-    handler          = "${var.transform_lambda}.lambda_handler"
+    handler          = "app.${var.transform_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
     layers           = ["arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python312:13"]

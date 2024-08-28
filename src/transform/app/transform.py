@@ -16,10 +16,14 @@ def lambda_handler(event,context):
     folder_name = prepend_time()    
     
     for key in df_new:
-        df_new[key].to_parquet(f's3://{bucket_name}/{folder_name}{key}.gzip', compression='gzip')
-        df_new[key].to_parquet(f's3://{bucket_name}/latest_updates/{key}.gzip', compression='gzip')  
+        # df_new[key].to_parquet(f's3://{bucket_name}/{folder_name}{key}.gzip', compression='gzip')
+        # df_new[key].to_parquet(f's3://{bucket_name}/latest_updates/{key}.gzip', compression='gzip')  
+
+        #  for lambda use wrangler
+        wr.s3.to_parquet(df=df_new[key], path = f's3://{bucket_name}/{folder_name}{key}.gzip', index=False)
+        wr.s3.to_parquet(df=df_new[key], path = f's3://{bucket_name}/latest_updates/{key}.gzip', index=False)  
+        
     
 
     return
 
-lambda_handler()

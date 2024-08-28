@@ -2,9 +2,8 @@ resource "null_resource" "create_dependencies" {
   provisioner "local-exec" {
     command = <<-EOT
     cd ${path.module}/..
-    poetry update
-    poetry export -f requirements.txt --output requirements.txt --without-hashes
-    poetry run pip install -r requirements.txt -t dependencies/python
+    rm -rf dependencies/python
+    poetry run pip install -r requirements_lambda.txt -t dependencies/python
     EOT
   }
   triggers = {

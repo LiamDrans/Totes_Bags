@@ -9,8 +9,6 @@ from .utils.helpers import prepend_time
 def lambda_handler(event, context) -> None:
     """lambda function to upload totes table data in json format to S3 Bucket"""
 
-    print("Extract task started")
-
     bucket_name = get_bucket_name('totes-data-')
     last_time_queried = None
 
