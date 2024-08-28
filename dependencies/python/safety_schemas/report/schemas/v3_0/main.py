@@ -10,12 +10,14 @@ from typing_extensions import Annotated, Literal
 try:
     from pydantic import Field, model_validator  # type: ignore # pragma: no cover
     from pydantic import BaseModel  # type: ignore # pragma: no cover
+
     MODEL_VALIDATOR_KWARGS = {"mode": "after"}
     LATEST_PYDANTIC = True
 except ImportError:
     from pydantic import Field, root_validator as model_validator  # type: ignore # noqa F401 # pragma: no cover
     from pydantic import BaseModel  # type: ignore # pragma: no cover
-    MODEL_VALIDATOR_KWARGS = {}    
+
+    MODEL_VALIDATOR_KWARGS = {}
     LATEST_PYDANTIC = False
 
 from .constants import (
@@ -33,18 +35,15 @@ from .constants import (
 
 
 class SchemaModelV30(BaseModel):
-    
     def json(self, *args, **kwargs) -> str:
         if LATEST_PYDANTIC:
             return self.model_dump_json(**kwargs)
-        
         return super().json(**kwargs)
-        
+
     @classmethod
     def parse_obj(cls: "SchemaModelV30", obj: Any) -> "SchemaModelV30":
         if LATEST_PYDANTIC:
             return cls.model_validate(obj)
-        
         return super(SchemaModelV30, cls).parse_obj(obj)
 
 
@@ -149,10 +148,12 @@ class ScanType(str, Enum):
     system_scan = "system-scan"
     check = "check"
 
+
 class StageType(str, Enum):
     development = "development"
     cicd = "cicd"
     production = "production"
+
 
 class IgnoredDetails(SchemaModelV30):
     code: str
@@ -188,10 +189,14 @@ class Vulnerability(SchemaModelV30):
 
     def dict(self, **kwargs):
         exclude = self.__get_exclude_fields__(kwargs)
+        if LATEST_PYDANTIC:
+            return self.model_dump(exclude=exclude, **kwargs)
         return super().dict(exclude=exclude, **kwargs)
 
     def json(self, **kwargs) -> str:
         exclude = self.__get_exclude_fields__(kwargs)
+        if LATEST_PYDANTIC:
+            return self.model_dump_json(exclude=exclude, **kwargs)
         return super().json(exclude=exclude, **kwargs)
 
 
@@ -374,26 +379,41 @@ class Report(SchemaModelV30):
     ]
     scan_results: Annotated[ScanResults, Field(..., title="Scan Results")]
 
-    @model_validator(**MODEL_VALIDATOR_KWARGS)
-    def validate_projects(cls, report):
+    if LATEST_PYDANTIC:
+
+        @model_validator(mode="after")
+        def validate_projects(self):
+            return self._validate_projects(self)
+
+    else:
+
+        @classmethod
+        @model_validator(pre=True)
+        def validate_projects(cls, values):
+            return cls._validate_projects(cls(**values))
+
+    @staticmethod
+    def _validate_projects(report):
         try:
             scan_type = report.meta.scan_type
         except Exception:
-            raise ValueError("Unable to parsing meta from the file report.")
+            raise ValueError("Unable to parse meta from the file report.")
 
         try:
             projects = report.scan_results.projects
         except Exception:
-            raise ValueError("Unable to parsing projects from the file report.")
+            raise ValueError("Unable to parse projects from the file report.")
 
-        if scan_type is ScanType.scan and any(type(p) is Projects for p in projects):
+        if scan_type is ScanType.scan and any(
+            isinstance(p, Projects) for p in projects
+        ):
             raise ValueError(
                 "If scan_type is 'scan', only ProjectsScan objects "
                 "should be used in results.projects."
             )
 
         if scan_type is ScanType.system_scan and any(
-            type(p) is ProjectsScan for p in projects
+            isinstance(p, ProjectsScan) for p in projects
         ):
             raise ValueError(
                 "If scan_type is not 'scan', only Projects objects "
