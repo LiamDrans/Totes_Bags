@@ -5,7 +5,7 @@ import json
 from pytest import mark, raises
 from src.extract.app.utils.helpers import format_response, prepend_time
 from src.extract.app.utils.json import json_encode
-from .sample_row import test_row, test_columns, resulting_row
+from tests.test_extract.sample_row import test_row, test_columns, resulting_row
 
 @mark.it('Test format response')
 def test_format_response():
