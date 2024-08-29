@@ -70,7 +70,9 @@ resource "aws_lambda_function" "task_load" {
     handler          = "app.load.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
-        logging_config {
+    layers           = [aws_lambda_layer_version.dependencies.arn]
+    
+    logging_config {
         log_format   = "Text"
         log_group    = aws_cloudwatch_log_group.logs.name
     }
