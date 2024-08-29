@@ -22,8 +22,9 @@ resource "aws_iam_role" "lambda_role" {
 
 data "aws_iam_policy_document" "s3_document" {
     statement {
-    actions = ["s3:PutObject",]
-    resources = ["${aws_s3_bucket.data_ingestion.arn}/*"]
+    actions = ["s3:PutObject", "s3:GetObject"]
+    resources = ["${aws_s3_bucket.data_ingestion.arn}/*", 
+                  "${aws_s3_bucket.processed_bucket.arn}/*"]
     }
     statement {
     actions = ["s3:ListAllMyBuckets", "s3:ListBucket"]

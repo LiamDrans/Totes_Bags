@@ -29,7 +29,7 @@ resource "aws_lambda_function" "task_extract" {
     handler          = "app.extract.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
-    layers           = [aws_lambda_layer_version.dependencies.arn]
+    layers           = ["${aws_lambda_layer_version.dependencies.arn}"]
     memory_size      = 256
     logging_config {
         log_format   = "Text"
@@ -41,7 +41,7 @@ resource "aws_lambda_function" "task_extract" {
     }
     }
 
-    depends_on = [aws_s3_object.lambda_code, aws_lambda_layer_version.dependencies]
+    depends_on = [aws_s3_object.lambda_code]
 }
 
 resource "aws_lambda_function" "task_transform" {
@@ -50,15 +50,22 @@ resource "aws_lambda_function" "task_transform" {
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.transform_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
-    handler          = "${var.transform_lambda}.lambda_handler"
+    handler          = "app.${var.transform_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
+    layers           = ["arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python312:13"]
+    memory_size = 256
     logging_config {
         log_format   = "Text"
         log_group    = aws_cloudwatch_log_group.logs.name
     }
 
     depends_on = [aws_s3_object.lambda_code]
+     environment {
+      variables = {
+        TZ="Europe/London"
+    }
+    }
 }
 
 resource "aws_lambda_function" "task_load" {
@@ -67,11 +74,11 @@ resource "aws_lambda_function" "task_load" {
     s3_bucket        = aws_s3_bucket.code_bucket.bucket
     s3_key           = "${var.load_lambda}/function.zip"
     role             = aws_iam_role.lambda_role.arn
-    handler          = "app.load.lambda_handler"
+    handler          = "${var.load_lambda}.lambda_handler"
     runtime          = "python3.12"
     timeout          = var.default_timeout
-    layers           = [aws_lambda_layer_version.dependencies.arn]
-    
+    memory_size = 256
+    layers         = ["${aws_lambda_layer_version.dependencies.arn}"]
     logging_config {
         log_format   = "Text"
         log_group    = aws_cloudwatch_log_group.logs.name
