@@ -181,4 +181,4 @@ terraform/terraform.tfstate.backup
 
 poetry.lock
 requirements.txt
-dependencies/python/
+# dependencies/python/
