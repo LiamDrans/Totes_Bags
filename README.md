@@ -1,6 +1,6 @@
 # The Data Engineering Project
 
-**Read this document carefully - it contains (almost) all you need to know about the project!**
+(https://northcoders.com/project-phase/team-sidley)
 
 ## Objective
 
