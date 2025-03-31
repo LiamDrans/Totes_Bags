@@ -81,9 +81,9 @@ Data Visualization
 
 - AWS QuickSight for business analytics.
 - Custom JavaScript Dashboard with:
--- Drop-down toggle for real-time data filtering.
--- Interactive parameter selection.
--- Live database updates.
+  - Drop-down toggle for real-time data filtering.
+  - Interactive parameter selection.
+  - Live database updates.
 
 ## Conclusion
 
