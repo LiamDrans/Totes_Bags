@@ -1,6 +1,6 @@
 # Overview
 
-Team Presentation: https://northcoders.com/project-phase/team-sidley
+Team Presentation: https://www.youtube.com/watch?v=pZ5mZAnqWN4
 
 Welcome to Team Sidley's project! Our team—Kyle, Simon, Liam, Zamir, Ishmail, and Russell—has developed an application to handle Extract, Transform, and Load (ETL) processes. The system moves data from a prepared source into a data lake and finally into a warehouse hosted in AWS. Our goal was to create a fully automated pipeline capable of raising its own alerts if issues arise.
 
