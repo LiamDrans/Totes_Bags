@@ -10,5 +10,5 @@ def get_db_credentials(secret_name: str):
         secret_value = client.get_secret_value(SecretId=secret_name)
         return json.loads(secret_value["SecretString"])
     except Exception as err:
-        logging.error('Error retrieving secret {secret_name}: %s', err)
+        logging.error('Error retrieving secret: %s', secret_name, err)
         raise
