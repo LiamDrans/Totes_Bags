@@ -4,9 +4,9 @@ import awswrangler as wr
 
 
 
-"""template for future"""
+
 def lambda_handler(event,context):
-    """template for future"""    
+    """Transforms extracted data into star schema and uploads to processed bucket as Parquet"""
 
     (data_list, table_names) = pull_latest_json_from_data_bucket()
     df_old=format_list_to_dict_of_dataframes(data_list, table_names)
